@@ -1,0 +1,6 @@
+cairo-widgets-test
+objects
+*.tmp
+temp*
+*.local
+
