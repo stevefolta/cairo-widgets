@@ -32,15 +32,17 @@ ExampleWindow::~ExampleWindow()
 
 void ExampleWindow::paint()
 {
-	// Draw the background.
 	auto cairo = cairo_gui->cairo();
+	cairo_push_group(cairo);
+
+	// Draw the background.
 	cairo_save(cairo);
 	cairo_rectangle(cairo, 0, 0, width, height);
 	cairo_set_source_rgb(cairo, background_color.red, background_color.green, background_color.blue);
 	cairo_fill(cairo);
 	cairo_restore(cairo);
 
-	// Always draw a popped-up menu on top.
+	// Draw widgets, always drawing a popped-up menu on top.
 	button->paint();
 	if (tracking_widget != menu)
 		menu->paint();
@@ -48,6 +50,10 @@ void ExampleWindow::paint()
 		color_menu->paint();
 	if (tracking_widget == menu || tracking_widget == color_menu)
 		tracking_widget->paint();
+
+	// Blit to screen.
+	cairo_pop_group_to_source(cairo);
+	cairo_paint(cairo);
 }
 
 
