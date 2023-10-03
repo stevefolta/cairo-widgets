@@ -1,11 +1,15 @@
 #include "ExampleWindow.h"
 #include "Button.h"
+#include "SimplePopupMenu.h"
 #include "CairoGUI.h"
 #include <iostream>
 
 static const double margin = 10.0;
 static const double default_button_width = 80.0;
 static const double default_button_height = 24.0;
+static const double default_menu_width = 120.0;
+static const double default_menu_height = 24.0;
+static const double default_spacing = 6.0;
 static const Color background_color = { 1.0, 1.0, 1.0 };
 
 
@@ -13,12 +17,14 @@ ExampleWindow::ExampleWindow(CairoGUI* cairo_gui_in)
 	: cairo_gui(cairo_gui_in)
 {
 	button = new Button(cairo_gui, "OK");
+	menu = new SimplePopupMenu(cairo_gui, { "Yes", "No", "Maybe" });
 }
 
 
 ExampleWindow::~ExampleWindow()
 {
 	delete button;
+	delete menu;
 }
 
 
@@ -33,6 +39,7 @@ void ExampleWindow::paint()
 	cairo_restore(cairo);
 
 	button->paint();
+	menu->paint();
 }
 
 
@@ -51,6 +58,8 @@ void ExampleWindow::mouse_pressed(int32_t x, int32_t y, int button)
 
 	if (this->button->contains(x, y))
 		tracking_widget = this->button;
+	else if (menu->contains(x, y))
+		menu->mouse_pressed(x, y);
 	if (tracking_widget)
 		tracking_widget->mouse_pressed(x, y);
 }
@@ -75,13 +84,21 @@ void ExampleWindow::mouse_moved(int32_t x, int32_t y)
 
 void ExampleWindow::layout()
 {
+	auto spacing = default_spacing;
 	auto button_width = default_button_width;
 	auto button_height = default_button_height;
+	auto menu_width = default_menu_width;
+	auto menu_height = default_menu_height;
 	if (height > 1000) {
+		spacing *= 2;
 		button_width *= 2;
 		button_height *= 2;
+		menu_width *= 2;
+		menu_height *= 2;
 		}
-	button->rect = { margin, margin, button_width, button_height };
+	menu->rect = { margin, margin, menu_width, menu_height };
+	auto top = margin + menu_height + spacing;
+	button->rect = { top, top, button_width, button_height };
 }
 
 

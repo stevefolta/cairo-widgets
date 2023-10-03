@@ -5,7 +5,7 @@ CFLAGS += -Wall
 -include Makefile.local
 
 SOURCES := main.cpp ExampleWindow.cpp
-WIDGETS_SOURCES += Widget.cpp Button.cpp TextBox.cpp
+WIDGETS_SOURCES += Widget.cpp Button.cpp TextBox.cpp SimplePopupMenu.cpp
 SOURCES += $(foreach source,$(WIDGETS_SOURCES),CairoWidgets/$(source))
 SUBDIRS = CairoWidgets
 LIBRARIES = X11 cairo
@@ -43,10 +43,11 @@ $(OBJECTS_DIR):
 	$(QUIET) mkdir -p $(OBJECTS_DIR) $(OBJECTS_SUBDIRS)
 
 -include $(OBJECTS_DIR)/*.d
+-include $(OBJECTS_DIR)/*/*.d
 
 
-.PHONY: runnit
-runnit: $(PROGRAM)
+.PHONY: run
+run: $(PROGRAM)
 	@./$(PROGRAM) $(RUN_ARGS)
 
 .PHONY: clean

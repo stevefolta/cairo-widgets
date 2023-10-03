@@ -4,6 +4,7 @@
 
 class CairoGUI;
 class Button;
+class SimplePopupMenu;
 class Widget;
 
 
@@ -21,6 +22,7 @@ class ExampleWindow {
 	protected:
 		CairoGUI* cairo_gui;
 		Button* button = nullptr;
+		SimplePopupMenu* menu = nullptr;
 		Widget* tracking_widget = nullptr;
 		double width, height;
 
