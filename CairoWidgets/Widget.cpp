@@ -5,9 +5,7 @@
 
 bool Widget::contains(double x, double y)
 {
-	return
-		x >= rect.x && x < rect.x + rect.width &&
-		y >= rect.y && y < rect.y + rect.height;
+	return rect.contains(x, y);
 }
 
 
