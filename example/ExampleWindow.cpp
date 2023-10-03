@@ -44,6 +44,35 @@ void ExampleWindow::resize(double new_width, double new_height)
 }
 
 
+void ExampleWindow::mouse_pressed(int32_t x, int32_t y, int button)
+{
+	if (button != 1)
+		return;
+
+	if (this->button->contains(x, y))
+		tracking_widget = this->button;
+	if (tracking_widget)
+		tracking_widget->mouse_pressed(x, y);
+}
+
+void ExampleWindow::mouse_released(int32_t x, int32_t y, int button)
+{
+	if (button != 1)
+		return;
+
+	if (tracking_widget) {
+		tracking_widget->mouse_released(x, y);
+		tracking_widget = nullptr;
+		}
+}
+
+void ExampleWindow::mouse_moved(int32_t x, int32_t y)
+{
+	if (tracking_widget)
+		tracking_widget->mouse_moved(x, y);
+}
+
+
 void ExampleWindow::layout()
 {
 	button->rect = { margin, margin, button_width, button_height };

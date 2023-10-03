@@ -146,15 +146,15 @@ void handle_x11_event(XEvent* event)
 
 		case ButtonPress:
 			if (event->xbutton.window == x_window)
-				{ /*** TODO ***/ }
+				example_window->mouse_pressed(event->xbutton.x, event->xbutton.y, event->xbutton.button);
 			break;
 		case ButtonRelease:
 			if (event->xbutton.window == x_window)
-				{ /*** TODO ***/ }
+				example_window->mouse_released(event->xbutton.x, event->xbutton.y, event->xbutton.button);
 			break;
 		case MotionNotify:
 			if (event->xmotion.window == x_window)
-				{ /*** TODO ***/ }
+				example_window->mouse_moved(event->xmotion.x, event->xmotion.y);
 			break;
 		case KeyPress:
 			if (event->xkey.window == x_window)
