@@ -4,8 +4,8 @@
 #include <iostream>
 
 static const double margin = 10.0;
-static const double button_width = 80.0;
-static const double button_height = 20.0;
+static const double default_button_width = 80.0;
+static const double default_button_height = 24.0;
 static const Color background_color = { 1.0, 1.0, 1.0 };
 
 
@@ -75,6 +75,12 @@ void ExampleWindow::mouse_moved(int32_t x, int32_t y)
 
 void ExampleWindow::layout()
 {
+	auto button_width = default_button_width;
+	auto button_height = default_button_height;
+	if (height > 1000) {
+		button_width *= 2;
+		button_height *= 2;
+		}
 	button->rect = { margin, margin, button_width, button_height };
 }
 
