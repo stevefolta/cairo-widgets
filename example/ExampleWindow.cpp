@@ -18,6 +18,7 @@ ExampleWindow::ExampleWindow(CairoGUI* cairo_gui_in)
 {
 	button = new Button(cairo_gui, "OK");
 	menu = new SimplePopupMenu(cairo_gui, { "Yes", "No", "Maybe" });
+	color_menu = new SimplePopupMenu(cairo_gui, { "Red", "Green", "Blue" });
 }
 
 
@@ -25,6 +26,7 @@ ExampleWindow::~ExampleWindow()
 {
 	delete button;
 	delete menu;
+	delete color_menu;
 }
 
 
@@ -40,6 +42,7 @@ void ExampleWindow::paint()
 
 	button->paint();
 	menu->paint();
+	color_menu->paint();
 }
 
 
@@ -59,7 +62,9 @@ void ExampleWindow::mouse_pressed(int32_t x, int32_t y, int button)
 	if (this->button->contains(x, y))
 		tracking_widget = this->button;
 	else if (menu->contains(x, y))
-		menu->mouse_pressed(x, y);
+		tracking_widget = menu;
+	else if (color_menu->contains(x, y))
+		tracking_widget = color_menu;
 	if (tracking_widget)
 		tracking_widget->mouse_pressed(x, y);
 }
@@ -95,10 +100,14 @@ void ExampleWindow::layout()
 		button_height *= 2;
 		menu_width *= 2;
 		menu_height *= 2;
+		menu->margin = 12.0;
+		color_menu->margin = 12.0;
 		}
 	menu->rect = { margin, margin, menu_width, menu_height };
 	auto top = margin + menu_height + spacing;
-	button->rect = { top, top, button_width, button_height };
+	button->rect = { margin, top, button_width, button_height };
+	top += button_height + spacing;
+	color_menu->rect = { margin, top, menu_width, menu_height };
 }
 
 

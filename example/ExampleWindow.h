@@ -23,6 +23,7 @@ class ExampleWindow {
 		CairoGUI* cairo_gui;
 		Button* button = nullptr;
 		SimplePopupMenu* menu = nullptr;
+		SimplePopupMenu* color_menu = nullptr;
 		Widget* tracking_widget = nullptr;
 		double width, height;
 
