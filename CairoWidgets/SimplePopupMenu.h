@@ -15,7 +15,10 @@ class SimplePopupMenu : public Widget {
 		bool mouse_released(int x, int y);
 		void mouse_moved(int x, int y);
 
+		virtual bool item_is_checked(int which_item) { return false; }
+
 		int selected_item = 0;
+		bool has_checked_items = false;
 		double margin = 6.0;
 		const char* font = nullptr;
 		cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_NORMAL;
@@ -27,6 +30,7 @@ class SimplePopupMenu : public Widget {
 		double border_width = 1.0;
 		double relative_text_size = 0.75;
 		double relative_arrow_size = 0.5;
+		const char* checkmark_string = nullptr;
 
 		// "max_bottom", if greater than zero, will constrain the bottom of the
 		// popped-up menu.

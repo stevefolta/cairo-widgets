@@ -105,11 +105,27 @@ void SimplePopupMenu::draw_item(int which_item, double top, bool selected)
 	cairo_text_extents_t em_box;
 	cairo_text_extents(cairo, "M", &em_box);
 
+	// Set up the checkmark.
+	const char* checkmark_string = nullptr;
+	double checkmark_width = 0;
+	if (has_checked_items) {
+		checkmark_string = (this->checkmark_string ? this->checkmark_string : "\u2713");
+		cairo_text_extents_t checkmark_extents;
+		cairo_text_extents(cairo, checkmark_string, &checkmark_extents);
+		checkmark_width = checkmark_extents.x_advance;
+		}
+
 	// Draw the item.
 	double baseline = top + (rect.height + em_box.height) / 2;
 	cairo_move_to(cairo, rect.x + margin, baseline);
 	const auto& text_color = (selected ? selected_foreground_color : foreground_color);
 	cairo_set_source_rgb(cairo, text_color.red, text_color.green, text_color.blue);
+	if (has_checked_items) {
+		if (item_is_checked(which_item))
+			cairo_show_text(cairo, checkmark_string);
+		else
+			cairo_rel_move_to(cairo, checkmark_width, 0);
+		}
 	cairo_show_text(cairo, items[which_item].c_str());
 }
 
