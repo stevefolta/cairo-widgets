@@ -24,6 +24,7 @@ class ExampleWindow {
 		Button* button = nullptr;
 		SimplePopupMenu* menu = nullptr;
 		SimplePopupMenu* color_menu = nullptr;
+		SimplePopupMenu* low_menu = nullptr;
 		Widget* tracking_widget = nullptr;
 		double width, height;
 

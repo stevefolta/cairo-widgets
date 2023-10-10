@@ -19,6 +19,7 @@ ExampleWindow::ExampleWindow(CairoGUI* cairo_gui_in)
 	button = new Button(cairo_gui, "OK");
 	menu = new SimplePopupMenu(cairo_gui, { "Yes", "No", "Maybe" });
 	color_menu = new SimplePopupMenu(cairo_gui, { "Red", "Green", "Blue" });
+	low_menu = new SimplePopupMenu(cairo_gui, { "Low", "Lower", "Lowest" });
 }
 
 
@@ -27,6 +28,7 @@ ExampleWindow::~ExampleWindow()
 	delete button;
 	delete menu;
 	delete color_menu;
+	delete low_menu;
 }
 
 
@@ -48,7 +50,9 @@ void ExampleWindow::paint()
 		menu->paint();
 	if (tracking_widget != color_menu)
 		color_menu->paint();
-	if (tracking_widget == menu || tracking_widget == color_menu)
+	if (tracking_widget != low_menu)
+		low_menu->paint();
+	if (tracking_widget == menu || tracking_widget == color_menu || tracking_widget == low_menu)
 		tracking_widget->paint();
 
 	// Blit to screen.
@@ -76,6 +80,8 @@ void ExampleWindow::mouse_pressed(int32_t x, int32_t y, int button)
 		tracking_widget = menu;
 	else if (color_menu->contains(x, y))
 		tracking_widget = color_menu;
+	else if (low_menu->contains(x, y))
+		tracking_widget = low_menu;
 	if (tracking_widget)
 		tracking_widget->mouse_pressed(x, y);
 }
@@ -119,6 +125,8 @@ void ExampleWindow::layout()
 	button->rect = { margin, top, button_width, button_height };
 	top += button_height + spacing;
 	color_menu->rect = { margin, top, menu_width, menu_height };
+	low_menu->rect = { margin, height - margin - menu_height, menu_width, menu_height };
+	low_menu->max_bottom = height - margin;
 }
 
 
