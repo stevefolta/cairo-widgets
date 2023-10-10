@@ -15,6 +15,7 @@ class SimplePopupMenu : public Widget {
 		bool mouse_released(int x, int y);
 		void mouse_moved(int x, int y);
 
+		virtual bool item_is_active(int which_item) { return true; }
 		virtual bool item_is_checked(int which_item) { return false; }
 
 		int selected_item = 0;
@@ -27,6 +28,7 @@ class SimplePopupMenu : public Widget {
 		Color selected_background_color = { 0.75, 0.75, 0.75 };
 		Color foreground_color = { 0.0, 0.0, 0.0 };
 		Color selected_foreground_color = { 0.0, 0.0, 0.0 };
+		Color inactive_foreground_color = { 0.5, 0.5, 0.5 };
 		double border_width = 1.0;
 		double relative_text_size = 0.75;
 		double relative_arrow_size = 0.5;

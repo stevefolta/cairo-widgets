@@ -22,7 +22,8 @@ void SimplePopupMenu::paint()
 		double item_top = rect.y;
 		int num_items = items.size();
 		for (int which_item = 0; which_item < num_items; ++which_item) {
-			draw_item(which_item, item_top, which_item == selected_item);
+			bool selected = (which_item == selected_item && item_is_active(which_item));
+			draw_item(which_item, item_top, selected);
 			item_top += this->rect.height;
 			}
 
@@ -71,7 +72,7 @@ bool SimplePopupMenu::mouse_released(int x, int y)
 	if (!is_up)
 		return false;
 
-	bool accepted = up_rect().contains(x, y);
+	bool accepted = up_rect().contains(x, y) && item_is_active(selected_item);
 	if (!accepted)
 		selected_item = initial_selected_item;
 
@@ -118,7 +119,9 @@ void SimplePopupMenu::draw_item(int which_item, double top, bool selected)
 	// Draw the item.
 	double baseline = top + (rect.height + em_box.height) / 2;
 	cairo_move_to(cairo, rect.x + margin, baseline);
-	const auto& text_color = (selected ? selected_foreground_color : foreground_color);
+	const auto& text_color =
+		(selected ? selected_foreground_color :
+		 item_is_active(which_item) ? foreground_color : inactive_foreground_color);
 	cairo_set_source_rgb(cairo, text_color.red, text_color.green, text_color.blue);
 	if (has_checked_items) {
 		if (item_is_checked(which_item))
