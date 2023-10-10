@@ -12,13 +12,29 @@ static const double default_menu_height = 24.0;
 static const double default_spacing = 6.0;
 static const Color background_color = { 1.0, 1.0, 1.0 };
 
+class CheckedPopupMenu : public SimplePopupMenu {
+	public:
+		CheckedPopupMenu(CairoGUI* gui_in, const std::vector<std::string>& items_in = {}, Rect rect_in = {})
+			: SimplePopupMenu(gui_in, items_in, rect_in), checked_items(items_in.size()) {
+				has_checked_items = true;
+				}
+		bool item_is_checked(int which_item) { return checked_items[which_item]; }
+		void toggle_selected_item() {
+			if (selected_item >= 0)
+				checked_items[selected_item] = !checked_items[selected_item];
+			}
+
+	protected:
+		std::vector<bool> checked_items;
+	};
+
 
 ExampleWindow::ExampleWindow(CairoGUI* cairo_gui_in)
 	: cairo_gui(cairo_gui_in)
 {
 	button = new Button(cairo_gui, "OK");
 	menu = new SimplePopupMenu(cairo_gui, { "Yes", "No", "Maybe" });
-	color_menu = new SimplePopupMenu(cairo_gui, { "Red", "Green", "Blue" });
+	color_menu = new CheckedPopupMenu(cairo_gui, { "Red", "Green", "Blue" });
 	low_menu = new SimplePopupMenu(cairo_gui, { "Low", "Lower", "Lowest" });
 }
 
@@ -92,7 +108,9 @@ void ExampleWindow::mouse_released(int32_t x, int32_t y, int button)
 		return;
 
 	if (tracking_widget) {
-		tracking_widget->mouse_released(x, y);
+		bool accepted = tracking_widget->mouse_released(x, y);
+		if (accepted && tracking_widget == color_menu)
+			color_menu->toggle_selected_item();
 		tracking_widget = nullptr;
 		}
 }
@@ -128,5 +146,6 @@ void ExampleWindow::layout()
 	low_menu->rect = { margin, height - margin - menu_height, menu_width, menu_height };
 	low_menu->max_bottom = height - margin;
 }
+
 
 
