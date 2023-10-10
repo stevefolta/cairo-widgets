@@ -123,6 +123,8 @@ Rect SimplePopupMenu::up_rect()
 			up_rect.y = 0;
 		}
 	up_rect.height = items.size() * rect.height;
+	if (up_rect.y + up_rect.height > max_bottom && up_rect.height < max_bottom)
+		up_rect.y = max_bottom - up_rect.height;
 	return up_rect;
 }
 

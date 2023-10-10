@@ -28,6 +28,10 @@ class SimplePopupMenu : public Widget {
 		double relative_text_size = 0.75;
 		double relative_arrow_size = 0.5;
 
+		// "max_bottom", if greater than zero, will constrain the bottom of the
+		// popped-up menu.
+		double max_bottom = 0.0;
+
 	protected:
 		std::vector<std::string> items;
 		bool is_up = false;
