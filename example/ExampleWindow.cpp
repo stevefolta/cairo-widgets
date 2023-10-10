@@ -18,6 +18,7 @@ class CheckedPopupMenu : public SimplePopupMenu {
 			: SimplePopupMenu(gui_in, items_in, rect_in), checked_items(items_in.size()) {
 				has_checked_items = true;
 				}
+		bool item_is_active(int which_item) { return which_item > 0; }
 		bool item_is_checked(int which_item) { return checked_items[which_item]; }
 		void toggle_selected_item() {
 			if (selected_item >= 0)
@@ -34,7 +35,7 @@ ExampleWindow::ExampleWindow(CairoGUI* cairo_gui_in)
 {
 	button = new Button(cairo_gui, "OK");
 	menu = new SimplePopupMenu(cairo_gui, { "Yes", "No", "Maybe" });
-	color_menu = new CheckedPopupMenu(cairo_gui, { "Red", "Green", "Blue" });
+	color_menu = new CheckedPopupMenu(cairo_gui, { "Colors", "Red", "Green", "Blue" });
 	low_menu = new SimplePopupMenu(cairo_gui, { "Low", "Lower", "Lowest" });
 }
 
@@ -109,8 +110,10 @@ void ExampleWindow::mouse_released(int32_t x, int32_t y, int button)
 
 	if (tracking_widget) {
 		bool accepted = tracking_widget->mouse_released(x, y);
-		if (accepted && tracking_widget == color_menu)
+		if (accepted && tracking_widget == color_menu) {
 			color_menu->toggle_selected_item();
+			color_menu->selected_item = 0;
+			}
 		tracking_widget = nullptr;
 		}
 }
