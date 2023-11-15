@@ -7,13 +7,20 @@
 
 class Label : public Widget {
 	public:
+		enum {
+			LeftJustified, Centered, RightJustified,
+			};
+
 		Label(CairoGUI* gui, std::string label_in, Rect rect = {})
 			: Widget(gui, rect), label(label_in) {}
 
 		std::string label;
-		Color color = { 0.0, 0.0, 0.0 };
+
+		static Color default_color;
+		Color color = default_color;
 		const char* font = nullptr;
 		cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_BOLD;
+		int justification = LeftJustified;
 
 		virtual void paint();
 	};
