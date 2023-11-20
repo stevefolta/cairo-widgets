@@ -33,7 +33,7 @@ class Widget {
 		virtual bool mouse_released(int x, int y) { return false; }
 		virtual void mouse_moved(int x, int y) {}
 		virtual void scroll_down(int x, int y) {}
-		virtual void scroll_up(int x, int y) {};
+		virtual void scroll_up(int x, int y) {}
 
 		void move_right_to(double right) {
 			rect.x = right - rect.width;
