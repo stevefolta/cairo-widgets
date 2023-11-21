@@ -7,7 +7,7 @@ class Button;
 class SimplePopupMenu;
 class Widget;
 class CheckedPopupMenu;
-class Label;
+class SimplePopupMenuLabel;
 
 
 class ExampleWindow {
@@ -27,7 +27,7 @@ class ExampleWindow {
 		SimplePopupMenu* menu = nullptr;
 		CheckedPopupMenu* color_menu = nullptr;
 		SimplePopupMenu* low_menu = nullptr;
-		Label* label = nullptr;
+		SimplePopupMenuLabel* low_menu_label = nullptr;
 		Widget* tracking_widget = nullptr;
 		double width, height;
 

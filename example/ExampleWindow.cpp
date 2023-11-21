@@ -1,7 +1,7 @@
 #include "ExampleWindow.h"
 #include "Button.h"
 #include "SimplePopupMenu.h"
-#include "Label.h"
+#include "SimplePopupMenuLabel.h"
 #include "CairoGUI.h"
 #include <iostream>
 
@@ -37,9 +37,8 @@ ExampleWindow::ExampleWindow(CairoGUI* cairo_gui_in)
 	button = new Button(cairo_gui, "OK");
 	menu = new SimplePopupMenu(cairo_gui, { "Yes", "No", "Maybe" });
 	color_menu = new CheckedPopupMenu(cairo_gui, { "Colors", "Red", "Green", "Blue" });
-	label = new Label(cairo_gui, "How low:");
-	label->font_weight = CAIRO_FONT_WEIGHT_NORMAL;
 	low_menu = new SimplePopupMenu(cairo_gui, { "Low", "Lower", "Lowest" });
+	low_menu_label = new SimplePopupMenuLabel(cairo_gui, "How low:", low_menu);
 }
 
 
@@ -48,7 +47,7 @@ ExampleWindow::~ExampleWindow()
 	delete button;
 	delete menu;
 	delete color_menu;
-	delete label;
+	delete low_menu_label;
 	delete low_menu;
 }
 
@@ -71,7 +70,7 @@ void ExampleWindow::paint()
 		menu->paint();
 	if (tracking_widget != color_menu)
 		color_menu->paint();
-	label->paint();
+	low_menu_label->paint();
 	if (tracking_widget != low_menu)
 		low_menu->paint();
 	if (tracking_widget == menu || tracking_widget == color_menu || tracking_widget == low_menu)
@@ -152,10 +151,11 @@ void ExampleWindow::layout()
 	top += button_height + spacing;
 	color_menu->rect = { margin, top, menu_width, menu_height };
 	auto low_top = height - margin - menu_height;
-	label->rect = { margin, low_top, menu_width, menu_height * low_menu->relative_text_size };
-	label->rect.width = label->drawn_width();
-	low_menu->rect = { margin + label->rect.width + menu_height * 0.3, low_top, menu_width, menu_height };
+	low_menu->rect = { margin, low_top, menu_width, menu_height };
 	low_menu->max_bottom = height - margin;
+	low_menu_label->rect = { margin, low_top, menu_width, menu_height };
+	low_menu_label->rect.width = low_menu_label->drawn_width();
+	low_menu->rect.x += low_menu_label->rect.width + menu_height * 0.3;
 }
 
 
