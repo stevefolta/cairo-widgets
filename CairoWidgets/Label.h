@@ -22,6 +22,8 @@ class Label : public Widget {
 		cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_BOLD;
 		int justification = LeftJustified;
 
-		virtual void paint();
+		void paint();
+
+		double drawn_width();
 	};
 
