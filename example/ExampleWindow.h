@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <stdint.h>
 
 class CairoGUI;
@@ -8,6 +9,7 @@ class SimplePopupMenu;
 class Widget;
 class CheckedPopupMenu;
 class SimplePopupMenuLabel;
+class SimpleLabeledPopupMenu;
 
 
 class ExampleWindow {
@@ -28,6 +30,8 @@ class ExampleWindow {
 		CheckedPopupMenu* color_menu = nullptr;
 		SimplePopupMenu* low_menu = nullptr;
 		SimplePopupMenuLabel* low_menu_label = nullptr;
+		std::vector<SimpleLabeledPopupMenu*> unaligned_popups;
+		std::vector<SimpleLabeledPopupMenu*> aligned_popups;
 		Widget* tracking_widget = nullptr;
 		double width, height;
 

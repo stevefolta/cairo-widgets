@@ -6,7 +6,7 @@ CFLAGS += -Wall
 
 SOURCES := main.cpp ExampleWindow.cpp
 WIDGETS_SOURCES += Widget.cpp Button.cpp TextBox.cpp SimplePopupMenu.cpp
-WIDGETS_SOURCES += Label.cpp SimplePopupMenuLabel.cpp
+WIDGETS_SOURCES += Label.cpp SimplePopupMenuLabel.cpp SimpleLabeledPopupMenu.cpp
 SOURCES += $(foreach source,$(WIDGETS_SOURCES),CairoWidgets/$(source))
 SUBDIRS = CairoWidgets
 LIBRARIES = X11 cairo

@@ -41,7 +41,7 @@ double SimplePopupMenuLabel::drawn_width()
 
 	cairo_restore(cairo);
 
-	return text_extents.width + text_extents.x_bearing;
+	return text_extents.x_advance;
 }
 
 
