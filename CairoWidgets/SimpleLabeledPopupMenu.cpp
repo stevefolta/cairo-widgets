@@ -15,6 +15,16 @@ SimpleLabeledPopupMenu::SimpleLabeledPopupMenu(
 	// layout() must be called explicitly.
 }
 
+SimpleLabeledPopupMenu::SimpleLabeledPopupMenu(
+	CairoGUI* gui_in,
+	std::string label_in,
+	SimplePopupMenu* menu_in,
+	Rect rect_in)
+	: Widget(gui_in, rect_in), menu(menu_in)
+{
+	label = new SimplePopupMenuLabel(gui, label_in, menu);
+	// layout() must be called explicitly.
+}
 
 SimpleLabeledPopupMenu::~SimpleLabeledPopupMenu()
 {

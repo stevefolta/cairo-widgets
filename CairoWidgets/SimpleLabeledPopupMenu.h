@@ -15,6 +15,11 @@ class SimpleLabeledPopupMenu : public Widget {
 			std::string label,
 			const std::vector<std::string>& items = {},
 			Rect rect_in = {});
+		SimpleLabeledPopupMenu(
+			CairoGUI* gui_in,
+			std::string label,
+			SimplePopupMenu* menu,
+			Rect rect_in = {});
 		~SimpleLabeledPopupMenu();
 
 		void paint();
