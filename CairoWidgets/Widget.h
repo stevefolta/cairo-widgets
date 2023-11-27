@@ -18,6 +18,11 @@ struct Color {
 	double red, green, blue, alpha = 1.0;
 	};
 
+enum SpecialKey {
+	UpArrow, DownArrow, LeftArrow, RightArrow,
+	PageUp, PageDown, HomeKey, EndKey,
+	};
+
 
 class Widget {
 	public:
@@ -34,6 +39,8 @@ class Widget {
 		virtual void mouse_moved(int x, int y) {}
 		virtual void scroll_down(int x, int y) {}
 		virtual void scroll_up(int x, int y) {}
+		virtual void key_pressed(int c) {}
+		virtual void special_key_pressed(SpecialKey key) {}
 
 		void move_right_to(double right) {
 			rect.x = right - rect.width;

@@ -3,6 +3,7 @@
 #include "SimplePopupMenu.h"
 #include "SimplePopupMenuLabel.h"
 #include "SimpleLabeledPopupMenu.h"
+#include "StringInputBox.h"
 #include "CairoGUI.h"
 #include <iostream>
 
@@ -13,6 +14,8 @@ static const double default_menu_width = 120.0;
 static const double default_menu_height = 24.0;
 static const double default_labeled_menu_width = 300.0;
 static const double default_labeled_menu_h_spacing = 30.0;
+static const double default_string_input_box_width = 500.0;
+static const double default_string_input_box_height = 28.0;
 static const double default_spacing = 6.0;
 static const Color background_color = { 1.0, 1.0, 1.0 };
 
@@ -48,6 +51,9 @@ ExampleWindow::ExampleWindow(CairoGUI* cairo_gui_in)
 		unaligned_popups.push_back(new SimpleLabeledPopupMenu(cairo_gui, "Unaligned " + menu_names[i] + ": ", menu_items));
 		aligned_popups.push_back(new SimpleLabeledPopupMenu(cairo_gui, "Aligned " + menu_names[i] + ": ", menu_items));
 		}
+	string_input_box = new StringInputBox(cairo_gui);
+	string_input_box->value = "Hamburgefons";
+	string_input_box->select_all();
 }
 
 
@@ -62,6 +68,7 @@ ExampleWindow::~ExampleWindow()
 	delete color_menu;
 	delete low_menu_label;
 	delete low_menu;
+	delete string_input_box;
 }
 
 
@@ -79,7 +86,7 @@ void ExampleWindow::paint()
 
 	// Draw widgets, always drawing a popped-up menu on top.
 	std::vector<Widget*> all_widgets = {
-		button, menu, color_menu, low_menu_label, low_menu,
+		button, menu, color_menu, low_menu_label, low_menu, string_input_box,
 		};
 	for (auto menu: unaligned_popups)
 		all_widgets.push_back(menu);
@@ -117,6 +124,8 @@ void ExampleWindow::mouse_pressed(int32_t x, int32_t y, int button)
 		tracking_widget = menu;
 	else if (color_menu->contains(x, y))
 		tracking_widget = color_menu;
+	else if (string_input_box->contains(x, y))
+		tracking_widget = string_input_box;
 	else if (low_menu->contains(x, y))
 		tracking_widget = low_menu;
 	else {
@@ -161,6 +170,23 @@ void ExampleWindow::mouse_moved(int32_t x, int32_t y)
 }
 
 
+void ExampleWindow::key_pressed(int c)
+{
+	string_input_box->key_pressed(c);
+}
+
+void ExampleWindow::special_key_pressed(SpecialKey key)
+{
+	string_input_box->special_key_pressed(key);
+}
+
+
+int ExampleWindow::next_update_ms()
+{
+	return string_input_box->next_update_ms();
+}
+
+
 void ExampleWindow::layout()
 {
 	auto spacing = default_spacing;
@@ -170,6 +196,8 @@ void ExampleWindow::layout()
 	auto menu_height = default_menu_height;
 	auto labeled_menu_width = default_labeled_menu_width;
 	auto labeled_menu_h_spacing = default_labeled_menu_h_spacing;
+	auto string_input_box_width = default_string_input_box_width;
+	auto string_input_box_height = default_string_input_box_height;
 	if (height > 1000) {
 		spacing *= 2;
 		button_width *= 2;
@@ -178,6 +206,8 @@ void ExampleWindow::layout()
 		menu_height *= 2;
 		labeled_menu_width *= 2;
 		labeled_menu_h_spacing *= 2;
+		string_input_box_width *= 2;
+		string_input_box_height *= 2;
 		menu->margin = 12.0;
 		color_menu->margin = 12.0;
 		}
@@ -208,6 +238,8 @@ void ExampleWindow::layout()
 		top += menu_height + spacing;
 		}
 
+	string_input_box->rect = { margin, top, string_input_box_width, string_input_box_height };
+
 	auto low_top = height - margin - menu_height;
 	low_menu->rect = { margin, low_top, menu_width, menu_height };
 	low_menu->max_bottom = height - margin;
@@ -215,6 +247,5 @@ void ExampleWindow::layout()
 	low_menu_label->rect.width = low_menu_label->drawn_width();
 	low_menu->rect.x += low_menu_label->rect.width + menu_height * 0.3;
 }
-
 
 

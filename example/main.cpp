@@ -2,7 +2,10 @@
 #include "CairoGUI.h"
 #include <X11/Xlib.h>
 #include <X11/cursorfont.h>
+#include <X11/Xutil.h>
 #include <cairo/cairo-xlib.h>
+#include <poll.h>
+#include <map>
 #include <iostream>
 
 Display* display = nullptr;
@@ -78,7 +81,19 @@ int main(int argc, const char* argv[])
 	example_window->resize(width, height);
 
 	// Event loop.
+	std::vector<struct pollfd> poll_fds = {
+		{ ConnectionNumber(display), POLLIN, 0 },
+		};
 	while (running) {
+		// Wait for X event, or timeout.
+		int timeout_ms = example_window->next_update_ms();
+		int num_waiting = poll(poll_fds.data(), poll_fds.size(), timeout_ms);
+		if (num_waiting <= 0) {
+			paint();
+			cairo_gui.refresh();
+			continue;
+			}
+
 		XEvent event;
 		XNextEvent(display, &event);
 
@@ -175,9 +190,25 @@ void handle_x11_event(XEvent* event)
 }
 
 
+static const std::map<KeySym, SpecialKey> special_keys = {
+	{ XK_Left, LeftArrow }, { XK_Right, RightArrow }, { XK_Up, UpArrow }, { XK_Down, DownArrow },
+	{ XK_Page_Up, PageUp }, { XK_Page_Down, PageDown }, { XK_Home, HomeKey }, { XK_End, EndKey },
+	};
+
 void handle_key_event(XKeyEvent* event)
 {
-	/***/
+	char buffer[64];
+	KeySym key_sym;
+	int num_chars = XLookupString(event, buffer, sizeof(buffer), &key_sym, nullptr);
+	if (num_chars > 0) {
+		for (int i = 0; i < num_chars; ++i)
+			example_window->key_pressed(buffer[i]);
+		}
+	else {
+		auto it = special_keys.find(key_sym);
+		if (it != special_keys.end())
+			example_window->special_key_pressed(it->second);
+		}
 }
 
 

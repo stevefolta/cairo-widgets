@@ -25,5 +25,7 @@ struct TimeSeconds {
 	TimeSeconds operator-(const TimeSeconds& other) const;
 
 	double as_double() const;
+
+	double elapsed_time() { return (now() - *this).as_double(); }
 	};
 
