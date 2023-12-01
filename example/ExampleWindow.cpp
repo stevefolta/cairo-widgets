@@ -53,6 +53,7 @@ ExampleWindow::ExampleWindow(CairoGUI* cairo_gui_in)
 		}
 	string_input_box = new StringInputBox(cairo_gui);
 	string_input_box->value = "Hamburgefons";
+	string_input_box->label = "Input: ";
 	string_input_box->select_all();
 }
 

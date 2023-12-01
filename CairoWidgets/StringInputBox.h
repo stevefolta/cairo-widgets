@@ -12,6 +12,8 @@ class StringInputBox : public Widget {
 
 		std::string value;
 		bool has_focus = true;
+		std::string label;
+		double force_label_width = 0.0;
 
 		void paint();
 		int next_update_ms();
@@ -26,6 +28,8 @@ class StringInputBox : public Widget {
 		void select_start();
 		void select_end();
 		void select_all();
+
+		double drawn_label_width();
 
 		Color color = default_color, border_color = { 0.0, 0.0, 0.0 }, cursor_color = { 0.0, 0.0, 0.0 }, selection_color = default_selection_color;
 		const char* font = nullptr;

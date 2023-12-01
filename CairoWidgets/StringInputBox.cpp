@@ -31,20 +31,34 @@ void StringInputBox::paint()
 	// Text setup.
 	auto [ margin, baseline ] = setup_font();
 
+	// Label.
+	double cur_label_width = 0.0;
+	cairo_text_extents_t text_extents;
+	if (!label.empty() || force_label_width > 0) {
+		cairo_move_to(cairo, rect.x, baseline);
+		use_color(color);
+		cairo_show_text(cairo, label.c_str());
+		if (force_label_width > 0)
+			cur_label_width = force_label_width;
+		else {
+			cairo_text_extents(cairo, label.c_str(), &text_extents);
+			cur_label_width = text_extents.x_advance;
+			}
+		}
+
 	// Selection.
 	if (has_focus && selection_start != selection_end) {
-		cairo_text_extents_t text_extents;
 		cairo_text_extents(cairo, value.substr(0, selection_start).c_str(), &text_extents);
-		double left = rect.x + margin + text_extents.x_advance;
+		double left = rect.x + cur_label_width + margin + text_extents.x_advance;
 		cairo_text_extents(cairo, value.substr(0, selection_end).c_str(), &text_extents);
-		double right = rect.x + margin + text_extents.x_advance;
+		double right = rect.x + cur_label_width + margin + text_extents.x_advance;
 		cairo_rectangle(cairo, left, rect.y + margin, right - left, rect.height - 2 * margin);
 		use_color(selection_color);
 		cairo_fill(cairo);
 		}
 
 	// Text.
-	cairo_move_to(cairo, rect.x + margin, baseline);
+	cairo_move_to(cairo, rect.x + cur_label_width + margin, baseline);
 	use_color(color);
 	cairo_show_text(cairo, value.c_str());
 
@@ -55,7 +69,7 @@ void StringInputBox::paint()
 		if (show) {
 			cairo_text_extents_t text_extents;
 			cairo_text_extents(cairo, value.substr(0, selection_start).c_str(), &text_extents);
-			double x = rect.x + margin + text_extents.x_advance;
+			double x = rect.x + cur_label_width + margin + text_extents.x_advance;
 			cairo_move_to(cairo, x, rect.y + margin);
 			cairo_line_to(cairo, x, rect.y + rect.height - margin);
 			cairo_set_line_width(cairo, cursor_width);
@@ -68,7 +82,7 @@ void StringInputBox::paint()
 	// Don't clip it.
 	cairo_restore(cairo);
 	cairo_save(cairo);
-	cairo_rectangle(cairo, rect.x, rect.y, rect.width, rect.height);
+	cairo_rectangle(cairo, rect.x + cur_label_width, rect.y, rect.width, rect.height);
 	cairo_set_line_width(cairo, border_width);
 	use_color(border_color);
 	cairo_stroke(cairo);
@@ -248,6 +262,18 @@ void StringInputBox::select_all()
 }
 
 
+double StringInputBox::drawn_label_width()
+{
+	auto cairo = gui->cairo();
+	cairo_save(cairo);
+	setup_font();
+	cairo_text_extents_t text_extents;
+	cairo_text_extents(cairo, label.c_str(), &text_extents);
+	cairo_restore(cairo);
+	return text_extents.x_advance;
+}
+
+
 StringInputBox::DrawLocs StringInputBox::setup_font()
 {
 	auto cairo = gui->cairo();
@@ -267,15 +293,21 @@ int StringInputBox::char_pos_for_mouse_pos(int x)
 	auto cairo = gui->cairo();
 	cairo_save(cairo);
 	auto [ margin, baseline ] = setup_font();
+	cairo_text_extents_t text_extents;
 
-	x -= rect.x + margin;
+	auto cur_label_width = force_label_width;
+	if (cur_label_width <= 0.0) {
+		cairo_text_extents(cairo, label.c_str(), &text_extents);
+		cur_label_width = text_extents.x_advance;
+		}
+
+	x -= rect.x + cur_label_width + margin;
 
 	// Binary search for longest string before x.
 	// (We want the longest because it could end with a character that takes
 	// multiple bytes in UTF8.)
 	int left = 0;
 	int right = value.size();
-	cairo_text_extents_t text_extents;
 	while (left < right) {
 		int mid = (left + right) / 2;
 		cairo_text_extents(cairo, value.substr(0, mid).c_str(), &text_extents);
