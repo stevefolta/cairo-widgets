@@ -31,6 +31,7 @@ class PopupMenu : public Widget {
 		Color border_color = { 0.0, 0.0, 0.0 };
 		Color background_color = { 1.0, 1.0, 1.0 };
 		Color selected_background_color = { 0.75, 0.75, 0.75 };
+		Color hovering_overlay_color = { 0, 0.25, 1, 0.05 };
 		Color foreground_color = { 0.0, 0.0, 0.0 };
 		Color selected_foreground_color = { 0.0, 0.0, 0.0 };
 		Color inactive_foreground_color = { 0.5, 0.5, 0.5 };
@@ -48,6 +49,7 @@ class PopupMenu : public Widget {
 	protected:
 		std::vector<std::string> items;
 		bool is_up = false;
+		bool hovering = false;
 		int initial_selected_item = -1;
 
 		virtual void draw_item(int which_item, Rect item_rect, bool selected);

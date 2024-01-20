@@ -168,6 +168,15 @@ void ExampleWindow::mouse_moved(int32_t x, int32_t y)
 {
 	if (tracking_widget)
 		tracking_widget->mouse_moved(x, y);
+	else {
+		// Enable hovering behavior for the menus.
+		for (auto menu: { menu, (PopupMenu*) color_menu, low_menu })
+			menu->mouse_moved(x, y);
+		for (auto menu: unaligned_popups)
+			menu->mouse_moved(x, y);
+		for (auto menu: aligned_popups)
+			menu->mouse_moved(x, y);
+		}
 }
 
 

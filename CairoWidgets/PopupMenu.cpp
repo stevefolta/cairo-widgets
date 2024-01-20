@@ -59,11 +59,6 @@ void PopupMenu::paint()
 		auto border_path = cairo_copy_path(cairo);
 		cairo_clip_preserve(cairo);
 
-		// Draw the background.
-		use_color(background_color);
-		cairo_fill(cairo);
-		//*** TODO
-
 		// Draw the current item.
 		if (selected_item >= 0 && selected_item < (int) items.size())
 			draw_item(selected_item, menu_rect, false);
@@ -79,8 +74,16 @@ void PopupMenu::paint()
 		use_color(arrow_color);
 		cairo_show_text(cairo, "\u25BC");
 
-		// Border.
+		// Hovering overlay.
+		if (hovering) {
+			use_rect(menu_rect);
+			use_color(hovering_overlay_color);
+			cairo_fill(cairo);
+			}
+
 		cairo_restore(cairo);
+
+		// Border.
 		cairo_append_path(cairo, border_path);
 		use_color(border_color);
 		cairo_set_line_width(cairo, border_width);
@@ -109,13 +112,18 @@ bool PopupMenu::mouse_released(int x, int y)
 		selected_item = initial_selected_item;
 
 	is_up = false;
+	mouse_moved(x, y);
 	return accepted;
 }
 
 void PopupMenu::mouse_moved(int x, int y)
 {
-	if (!is_up)
+	if (!is_up) {
+		double label_width = (force_label_width > 0.0 ? force_label_width : natural_label_width());
+		Rect menu_rect = { rect.x + label_width, rect.y, rect.width - label_width, rect.height };
+		hovering = menu_rect.contains(x, y);
 		return;
+		}
 
 	Rect full_rect = up_rect();
 	selected_item = (y - full_rect.y) / rect.height;
