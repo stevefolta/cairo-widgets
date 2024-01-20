@@ -18,8 +18,8 @@ class PopupMenu : public Widget {
 		virtual bool item_is_active(int which_item) { return true; }
 		virtual bool item_is_checked(int which_item) { return false; }
 
-		double natural_width();
-		double natural_label_width();
+		double natural_width(double for_height = 0);
+		double natural_label_width(double for_height = 0);
 
 		std::string label;
 		double force_label_width = 0.0;

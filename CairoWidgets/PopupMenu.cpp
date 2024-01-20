@@ -191,15 +191,17 @@ Rect PopupMenu::up_rect()
 }
 
 
-double PopupMenu::natural_width()
+double PopupMenu::natural_width(double for_height)
 {
 	auto cairo = gui->cairo();
 	cairo_save(cairo);
-	auto label_width = (force_label_width ? force_label_width : natural_label_width());
+	if (for_height <= 0)
+		for_height = rect.height;
+	auto label_width = (force_label_width ? force_label_width : natural_label_width(for_height));
 
 	// Set up the font.
 	cairo_select_font_face(cairo, (font ? font : gui->default_font()), CAIRO_FONT_SLANT_NORMAL, font_weight);
-	cairo_set_font_size(cairo, rect.height * relative_text_size);
+	cairo_set_font_size(cairo, for_height * relative_text_size);
 	cairo_text_extents_t text_extents;
 
 	// Find the maximum item width.
@@ -227,11 +229,13 @@ double PopupMenu::natural_width()
 	return label_width + 2 * margin + max_item_width + checkmark_width + arrow_width;
 }
 
-double PopupMenu::natural_label_width()
+double PopupMenu::natural_label_width(double for_height)
 {
 	if (label.empty())
 		return 0;
 
+	if (for_height <= 0)
+		for_height = rect.height;
 	auto cairo = gui->cairo();
 	cairo_save(cairo);
 	cairo_select_font_face(
@@ -239,7 +243,7 @@ double PopupMenu::natural_label_width()
 		(font ? font : gui->default_font()),
 		CAIRO_FONT_SLANT_NORMAL,
 		font_weight);
-	cairo_set_font_size(cairo, rect.height * relative_text_size);
+	cairo_set_font_size(cairo, for_height * relative_text_size);
 	cairo_text_extents_t text_extents;
 	cairo_text_extents(cairo, label.c_str(), &text_extents);
 	cairo_restore(cairo);

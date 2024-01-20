@@ -230,24 +230,22 @@ void ExampleWindow::layout()
 	auto menu_top = top;
 	auto unaligned_menu_width = 0;
 	for (auto menu: unaligned_popups) {
+		auto width = menu->natural_width(menu_height);
 		menu->rect = { margin, menu_top, width, menu_height };
-		auto width = menu->natural_width();
-		menu->rect.width = width;
 		menu_top += menu_height + spacing;
 		if (width > unaligned_menu_width)
 			unaligned_menu_width = width;
 		}
 	double label_width = 0.0;
 	for (auto menu: aligned_popups) {
-		auto width = menu->natural_label_width();
+		auto width = menu->natural_label_width(menu_height);
 		if (width > label_width)
 			label_width = width;
 		}
 	auto menu_left = margin + unaligned_menu_width + labeled_menu_h_spacing;
 	for (auto menu: aligned_popups) {
 		menu->force_label_width = label_width;
-		menu->rect = { menu_left, top, 0, menu_height };
-		menu->rect.width = menu->natural_width();
+		menu->rect = { menu_left, top, menu->natural_width(menu_height), menu_height };
 		top += menu_height + spacing;
 		}
 
