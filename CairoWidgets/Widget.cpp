@@ -51,6 +51,11 @@ void Widget::rounded_rect(Rect rect, double corner_width, double corner_height)
 
 
 
+void Widget::use_rect(const Rect& rect)
+{
+	cairo_rectangle(gui->cairo(), rect.x, rect.y, rect.width, rect.height);
+}
+
 void Widget::use_color(const Color& color)
 {
 	cairo_set_source_rgba(gui->cairo(), color.red, color.green, color.blue, color.alpha);

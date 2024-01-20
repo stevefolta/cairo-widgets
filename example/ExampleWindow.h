@@ -9,7 +9,7 @@ class Button;
 class SimplePopupMenu;
 class CheckedPopupMenu;
 class SimplePopupMenuLabel;
-class SimpleLabeledPopupMenu;
+class PopupMenu;
 class StringInputBox;
 
 
@@ -35,8 +35,8 @@ class ExampleWindow {
 		CheckedPopupMenu* color_menu = nullptr;
 		SimplePopupMenu* low_menu = nullptr;
 		SimplePopupMenuLabel* low_menu_label = nullptr;
-		std::vector<SimpleLabeledPopupMenu*> unaligned_popups;
-		std::vector<SimpleLabeledPopupMenu*> aligned_popups;
+		std::vector<PopupMenu*> unaligned_popups;
+		std::vector<PopupMenu*> aligned_popups;
 		StringInputBox* string_input_box = nullptr;
 		Widget* tracking_widget = nullptr;
 		double width, height;

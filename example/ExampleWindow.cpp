@@ -2,7 +2,7 @@
 #include "Button.h"
 #include "SimplePopupMenu.h"
 #include "SimplePopupMenuLabel.h"
-#include "SimpleLabeledPopupMenu.h"
+#include "PopupMenu.h"
 #include "StringInputBox.h"
 #include "CairoGUI.h"
 #include <iostream>
@@ -12,7 +12,6 @@ static const double default_button_width = 80.0;
 static const double default_button_height = 24.0;
 static const double default_menu_width = 120.0;
 static const double default_menu_height = 24.0;
-static const double default_labeled_menu_width = 300.0;
 static const double default_labeled_menu_h_spacing = 30.0;
 static const double default_string_input_box_width = 500.0;
 static const double default_string_input_box_height = 28.0;
@@ -48,8 +47,12 @@ ExampleWindow::ExampleWindow(CairoGUI* cairo_gui_in)
 	std::vector<std::string> menu_items = { "Alpha", "Beta", "Gamma", "Interrobang" };
 	std::vector<std::string> menu_names = { "One", "2", "Threeee" };
 	for (int i = 0; i < 3; ++i) {
-		unaligned_popups.push_back(new SimpleLabeledPopupMenu(cairo_gui, "Unaligned " + menu_names[i] + ": ", menu_items));
-		aligned_popups.push_back(new SimpleLabeledPopupMenu(cairo_gui, "Aligned " + menu_names[i] + ": ", menu_items));
+		auto popup = new PopupMenu(cairo_gui, menu_items);
+		popup->label = "Unaligned " + menu_names[i] + ": ";
+		unaligned_popups.push_back(popup);
+		popup = new PopupMenu(cairo_gui, menu_items);
+		popup->label = "Aligned " + menu_names[i] + ": ";
+		aligned_popups.push_back(popup);
 		}
 	string_input_box = new StringInputBox(cairo_gui);
 	string_input_box->value = "Hamburgefons";
@@ -195,7 +198,6 @@ void ExampleWindow::layout()
 	auto button_height = default_button_height;
 	auto menu_width = default_menu_width;
 	auto menu_height = default_menu_height;
-	auto labeled_menu_width = default_labeled_menu_width;
 	auto labeled_menu_h_spacing = default_labeled_menu_h_spacing;
 	auto string_input_box_width = default_string_input_box_width;
 	auto string_input_box_height = default_string_input_box_height;
@@ -205,7 +207,6 @@ void ExampleWindow::layout()
 		button_height *= 2;
 		menu_width *= 2;
 		menu_height *= 2;
-		labeled_menu_width *= 2;
 		labeled_menu_h_spacing *= 2;
 		string_input_box_width *= 2;
 		string_input_box_height *= 2;
@@ -221,21 +222,24 @@ void ExampleWindow::layout()
 	top += menu_height + spacing;
 
 	auto menu_top = top;
+	auto unaligned_menu_width = 0;
 	for (auto menu: unaligned_popups) {
-		menu->rect = { margin, menu_top, labeled_menu_width, menu_height };
-		menu->layout();
+		auto width = menu->natural_width();
+		menu->rect = { margin, menu_top, width, menu_height };
 		menu_top += menu_height + spacing;
+		if (width > unaligned_menu_width)
+			unaligned_menu_width = width;
 		}
 	double label_width = 0.0;
 	for (auto menu: aligned_popups) {
-		auto width = menu->label_width();
+		auto width = menu->natural_label_width();
 		if (width > label_width)
 			label_width = width;
 		}
-	auto menu_left = margin + labeled_menu_width + labeled_menu_h_spacing;
+	auto menu_left = margin + unaligned_menu_width + labeled_menu_h_spacing;
 	for (auto menu: aligned_popups) {
-		menu->rect = { menu_left, top, labeled_menu_width, menu_height };
-		menu->layout(label_width);
+		menu->force_label_width = label_width;
+		menu->rect = { menu_left, top, menu->natural_width(), menu_height };
 		top += menu_height + spacing;
 		}
 

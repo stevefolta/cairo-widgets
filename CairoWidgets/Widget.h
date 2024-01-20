@@ -55,6 +55,7 @@ class Widget {
 		// Utilities.
 		void rounded_rect(Rect rect, double corner_size);
 		void rounded_rect(Rect rect, double corner_width, double corner_height);
+		void use_rect(const Rect& rect);
 		void use_color(const Color& color);
 	};
 
