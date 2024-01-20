@@ -38,6 +38,7 @@ class PopupMenu : public Widget {
 		double border_width = 1.0;
 		double relative_text_size = 0.75;
 		double relative_arrow_size = 0.5;
+		double relative_roundedness = 0.1;
 		const char* checkmark_string = nullptr;
 
 		// "max_bottom", if greater than zero, will constrain the bottom of the

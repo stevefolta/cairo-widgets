@@ -54,19 +54,19 @@ void PopupMenu::paint()
 
 	else {
 		Rect menu_rect = { rect.x + label_width, rect.y, rect.width - label_width, rect.height };
+		cairo_save(cairo);
+		rounded_rect(menu_rect, menu_rect.height * relative_roundedness);
+		auto border_path = cairo_copy_path(cairo);
+		cairo_clip_preserve(cairo);
 
 		// Draw the background.
+		use_color(background_color);
+		cairo_fill(cairo);
 		//*** TODO
 
 		// Draw the current item.
 		if (selected_item >= 0 && selected_item < (int) items.size())
 			draw_item(selected_item, menu_rect, false);
-
-		// Border.
-		cairo_rectangle(cairo, menu_rect.x, menu_rect.y, menu_rect.width, menu_rect.height);
-		cairo_set_source_rgb(cairo, border_color.red, border_color.green, border_color.blue);
-		cairo_set_line_width(cairo, border_width);
-		cairo_stroke(cairo);
 
 		// Arrow.
 		cairo_select_font_face(cairo, (font ? font : gui->default_font()), CAIRO_FONT_SLANT_NORMAL, font_weight);
@@ -78,6 +78,15 @@ void PopupMenu::paint()
 		cairo_move_to(cairo, menu_rect.x + menu_rect.width - margin - text_extents.x_advance, baseline);
 		use_color(arrow_color);
 		cairo_show_text(cairo, "\u25BC");
+
+		// Border.
+		cairo_restore(cairo);
+		cairo_append_path(cairo, border_path);
+		use_color(border_color);
+		cairo_set_line_width(cairo, border_width);
+		cairo_stroke(cairo);
+
+		cairo_path_destroy(border_path);
 		}
 
 	cairo_restore(cairo);
