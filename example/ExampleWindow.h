@@ -6,10 +6,8 @@
 
 class CairoGUI;
 class Button;
-class SimplePopupMenu;
-class CheckedPopupMenu;
-class SimplePopupMenuLabel;
 class PopupMenu;
+class CheckedPopupMenu;
 class StringInputBox;
 
 
@@ -31,10 +29,9 @@ class ExampleWindow {
 	protected:
 		CairoGUI* cairo_gui;
 		Button* button = nullptr;
-		SimplePopupMenu* menu = nullptr;
+		PopupMenu* menu = nullptr;
 		CheckedPopupMenu* color_menu = nullptr;
-		SimplePopupMenu* low_menu = nullptr;
-		SimplePopupMenuLabel* low_menu_label = nullptr;
+		PopupMenu* low_menu = nullptr;
 		std::vector<PopupMenu*> unaligned_popups;
 		std::vector<PopupMenu*> aligned_popups;
 		StringInputBox* string_input_box = nullptr;

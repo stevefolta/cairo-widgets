@@ -1,7 +1,5 @@
 #include "ExampleWindow.h"
 #include "Button.h"
-#include "SimplePopupMenu.h"
-#include "SimplePopupMenuLabel.h"
 #include "PopupMenu.h"
 #include "StringInputBox.h"
 #include "CairoGUI.h"
@@ -18,10 +16,10 @@ static const double default_string_input_box_height = 28.0;
 static const double default_spacing = 6.0;
 static const Color background_color = { 1.0, 1.0, 1.0 };
 
-class CheckedPopupMenu : public SimplePopupMenu {
+class CheckedPopupMenu : public PopupMenu {
 	public:
 		CheckedPopupMenu(CairoGUI* gui_in, const std::vector<std::string>& items_in = {}, Rect rect_in = {})
-			: SimplePopupMenu(gui_in, items_in, rect_in), checked_items(items_in.size()) {
+			: PopupMenu(gui_in, items_in, rect_in), checked_items(items_in.size()) {
 				has_checked_items = true;
 				}
 		bool item_is_active(int which_item) { return which_item > 0; }
@@ -40,10 +38,10 @@ ExampleWindow::ExampleWindow(CairoGUI* cairo_gui_in)
 	: cairo_gui(cairo_gui_in)
 {
 	button = new Button(cairo_gui, "OK");
-	menu = new SimplePopupMenu(cairo_gui, { "Yes", "No", "Maybe" });
+	menu = new PopupMenu(cairo_gui, { "Yes", "No", "Maybe" });
 	color_menu = new CheckedPopupMenu(cairo_gui, { "Colors", "Red", "Green", "Blue" });
-	low_menu = new SimplePopupMenu(cairo_gui, { "Low", "Lower", "Lowest" });
-	low_menu_label = new SimplePopupMenuLabel(cairo_gui, "How low:", low_menu);
+	low_menu = new PopupMenu(cairo_gui, { "Low", "Lower", "Lowest" });
+	low_menu->label = "How low: ";
 	std::vector<std::string> menu_items = { "Alpha", "Beta", "Gamma", "Interrobang" };
 	std::vector<std::string> menu_names = { "One", "2", "Threeee" };
 	for (int i = 0; i < 3; ++i) {
@@ -70,7 +68,6 @@ ExampleWindow::~ExampleWindow()
 	delete button;
 	delete menu;
 	delete color_menu;
-	delete low_menu_label;
 	delete low_menu;
 	delete string_input_box;
 }
@@ -90,7 +87,7 @@ void ExampleWindow::paint()
 
 	// Draw widgets, always drawing a popped-up menu on top.
 	std::vector<Widget*> all_widgets = {
-		button, menu, color_menu, low_menu_label, low_menu, string_input_box,
+		button, menu, color_menu, low_menu, string_input_box,
 		};
 	for (auto menu: unaligned_popups)
 		all_widgets.push_back(menu);
@@ -224,8 +221,9 @@ void ExampleWindow::layout()
 	auto menu_top = top;
 	auto unaligned_menu_width = 0;
 	for (auto menu: unaligned_popups) {
-		auto width = menu->natural_width();
 		menu->rect = { margin, menu_top, width, menu_height };
+		auto width = menu->natural_width();
+		menu->rect.width = width;
 		menu_top += menu_height + spacing;
 		if (width > unaligned_menu_width)
 			unaligned_menu_width = width;
@@ -239,7 +237,8 @@ void ExampleWindow::layout()
 	auto menu_left = margin + unaligned_menu_width + labeled_menu_h_spacing;
 	for (auto menu: aligned_popups) {
 		menu->force_label_width = label_width;
-		menu->rect = { menu_left, top, menu->natural_width(), menu_height };
+		menu->rect = { menu_left, top, 0, menu_height };
+		menu->rect.width = menu->natural_width();
 		top += menu_height + spacing;
 		}
 
@@ -247,10 +246,8 @@ void ExampleWindow::layout()
 
 	auto low_top = height - margin - menu_height;
 	low_menu->rect = { margin, low_top, menu_width, menu_height };
+	low_menu->rect.width = low_menu->natural_width();
 	low_menu->max_bottom = height - margin;
-	low_menu_label->rect = { margin, low_top, menu_width, menu_height };
-	low_menu_label->rect.width = low_menu_label->drawn_width();
-	low_menu->rect.x += low_menu_label->rect.width + menu_height * 0.3;
 }
 
 
