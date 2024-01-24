@@ -216,8 +216,8 @@ void ExampleWindow::layout()
 		labeled_menu_h_spacing *= 2;
 		string_input_box_width *= 2;
 		string_input_box_height *= 2;
-		menu->margin = 12.0;
-		color_menu->margin = 12.0;
+		menu->style.margin = 12.0;
+		color_menu->style.margin = 12.0;
 		}
 
 	menu->rect = { margin, margin, menu_width, menu_height };

@@ -1,6 +1,8 @@
 #include "PopupMenu.h"
 #include "CairoGUI.h"
 
+PopupMenu::Style PopupMenu::default_style;
+
 
 PopupMenu::PopupMenu(CairoGUI* gui_in, const std::vector<std::string>& items_in, Rect rect_in)
 	: Widget(gui_in, rect), items(items_in)
@@ -20,15 +22,15 @@ void PopupMenu::paint()
 	if (!label.empty()) {
 		cairo_select_font_face(
 			cairo,
-			(font ? font : gui->default_font()),
+			(style.font ? style.font : gui->default_font()),
 			CAIRO_FONT_SLANT_NORMAL,
-			font_weight);
-		cairo_set_font_size(cairo, rect.height * relative_text_size);
+			style.font_weight);
+		cairo_set_font_size(cairo, rect.height * style.relative_text_size);
 		cairo_text_extents_t em_box;
 		cairo_text_extents(cairo, "M", &em_box);
 		double baseline = rect.y + (rect.height + em_box.height) / 2;
 		cairo_move_to(cairo, rect.x, baseline);
-		use_color(foreground_color);
+		use_color(style.foreground_color);
 		cairo_show_text(cairo, label.c_str());
 		}
 
@@ -47,15 +49,15 @@ void PopupMenu::paint()
 
 		// Border.
 		cairo_rectangle(cairo, popped_rect.x, popped_rect.y, popped_rect.width, popped_rect.height);
-		cairo_set_source_rgb(cairo, border_color.red, border_color.green, border_color.blue);
-		cairo_set_line_width(cairo, border_width);
+		use_color(style.border_color);
+		cairo_set_line_width(cairo, style.border_width);
 		cairo_stroke(cairo);
 		}
 
 	else {
 		Rect menu_rect = { rect.x + label_width, rect.y, rect.width - label_width, rect.height };
 		cairo_save(cairo);
-		rounded_rect(menu_rect, menu_rect.height * relative_roundedness);
+		rounded_rect(menu_rect, menu_rect.height * style.relative_roundedness);
 		auto border_path = cairo_copy_path(cairo);
 		cairo_clip_preserve(cairo);
 
@@ -64,20 +66,20 @@ void PopupMenu::paint()
 			draw_item(selected_item, menu_rect, false);
 
 		// Arrow.
-		cairo_select_font_face(cairo, (font ? font : gui->default_font()), CAIRO_FONT_SLANT_NORMAL, font_weight);
-		cairo_set_font_size(cairo, menu_rect.height * relative_arrow_size);
+		cairo_select_font_face(cairo, (style.font ? style.font : gui->default_font()), CAIRO_FONT_SLANT_NORMAL, style.font_weight);
+		cairo_set_font_size(cairo, menu_rect.height * style.relative_arrow_size);
 		cairo_text_extents_t text_extents;
 		cairo_text_extents(cairo, "M", &text_extents);
 		double baseline = menu_rect.y + (menu_rect.height + text_extents.height) / 2;
 		cairo_text_extents(cairo, "\u25BC", &text_extents);
-		cairo_move_to(cairo, menu_rect.x + menu_rect.width - margin - text_extents.x_advance, baseline);
-		use_color(arrow_color);
+		cairo_move_to(cairo, menu_rect.x + menu_rect.width - style.margin - text_extents.x_advance, baseline);
+		use_color(style.arrow_color);
 		cairo_show_text(cairo, "\u25BC");
 
 		// Hovering overlay.
 		if (hovering) {
 			use_rect(menu_rect);
-			use_color(hovering_overlay_color);
+			use_color(style.hovering_overlay_color);
 			cairo_fill(cairo);
 			}
 
@@ -85,8 +87,8 @@ void PopupMenu::paint()
 
 		// Border.
 		cairo_append_path(cairo, border_path);
-		use_color(border_color);
-		cairo_set_line_width(cairo, border_width);
+		use_color(style.border_color);
+		cairo_set_line_width(cairo, style.border_width);
 		cairo_stroke(cairo);
 
 		cairo_path_destroy(border_path);
@@ -135,14 +137,14 @@ void PopupMenu::draw_item(int which_item, Rect item_rect, bool selected)
 	auto cairo = gui->cairo();
 
 	// Background.
-	const auto& color = (selected ? selected_background_color : background_color);
+	const auto& color = (selected ? style.selected_background_color : style.background_color);
 	use_rect(item_rect);
 	use_color(color);
 	cairo_fill(cairo);
 
 	// Set up the font.
-	cairo_select_font_face(cairo, (font ? font : gui->default_font()), CAIRO_FONT_SLANT_NORMAL, font_weight);
-	cairo_set_font_size(cairo, rect.height * relative_text_size);
+	cairo_select_font_face(cairo, (style.font ? style.font : gui->default_font()), CAIRO_FONT_SLANT_NORMAL, style.font_weight);
+	cairo_set_font_size(cairo, rect.height * style.relative_text_size);
 	cairo_text_extents_t em_box;
 	cairo_text_extents(cairo, "M", &em_box);
 
@@ -150,7 +152,7 @@ void PopupMenu::draw_item(int which_item, Rect item_rect, bool selected)
 	const char* checkmark_string = nullptr;
 	double checkmark_width = 0;
 	if (has_checked_items) {
-		checkmark_string = (this->checkmark_string ? this->checkmark_string : "\u2713");
+		checkmark_string = (style.checkmark_string ? style.checkmark_string : "\u2713");
 		cairo_text_extents_t checkmark_extents;
 		cairo_text_extents(cairo, checkmark_string, &checkmark_extents);
 		checkmark_width = checkmark_extents.x_advance;
@@ -158,11 +160,11 @@ void PopupMenu::draw_item(int which_item, Rect item_rect, bool selected)
 
 	// Draw the item.
 	double baseline = item_rect.y + (item_rect.height + em_box.height) / 2;
-	cairo_move_to(cairo, item_rect.x + margin, baseline);
+	cairo_move_to(cairo, item_rect.x + style.margin, baseline);
 	const auto& text_color =
-		(selected ? selected_foreground_color :
-		 item_is_active(which_item) ? foreground_color : inactive_foreground_color);
-	cairo_set_source_rgb(cairo, text_color.red, text_color.green, text_color.blue);
+		(selected ? style.selected_foreground_color :
+		 item_is_active(which_item) ? style.foreground_color : style.inactive_foreground_color);
+	use_color(text_color);
 	if (has_checked_items) {
 		if (item_is_checked(which_item))
 			cairo_show_text(cairo, checkmark_string);
@@ -200,8 +202,8 @@ double PopupMenu::natural_width(double for_height)
 	auto label_width = (force_label_width ? force_label_width : natural_label_width(for_height));
 
 	// Set up the font.
-	cairo_select_font_face(cairo, (font ? font : gui->default_font()), CAIRO_FONT_SLANT_NORMAL, font_weight);
-	cairo_set_font_size(cairo, for_height * relative_text_size);
+	cairo_select_font_face(cairo, (style.font ? style.font : gui->default_font()), CAIRO_FONT_SLANT_NORMAL, style.font_weight);
+	cairo_set_font_size(cairo, for_height * style.relative_text_size);
 	cairo_text_extents_t text_extents;
 
 	// Find the maximum item width.
@@ -215,7 +217,7 @@ double PopupMenu::natural_width(double for_height)
 	// Checkmark?
 	double checkmark_width = 0;
 	if (has_checked_items) {
-		checkmark_string = (this->checkmark_string ? this->checkmark_string : "\u2713");
+		auto checkmark_string = (style.checkmark_string ? style.checkmark_string : "\u2713");
 		cairo_text_extents(cairo, checkmark_string, &text_extents);
 		checkmark_width = text_extents.x_advance;
 		}
@@ -226,7 +228,7 @@ double PopupMenu::natural_width(double for_height)
 	// This doesn't seem to need the margin added in...
 
 	cairo_restore(cairo);
-	return label_width + 2 * margin + max_item_width + checkmark_width + arrow_width;
+	return label_width + 2 * style.margin + max_item_width + checkmark_width + arrow_width;
 }
 
 double PopupMenu::natural_label_width(double for_height)
@@ -240,10 +242,10 @@ double PopupMenu::natural_label_width(double for_height)
 	cairo_save(cairo);
 	cairo_select_font_face(
 		cairo,
-		(font ? font : gui->default_font()),
+		(style.font ? style.font : gui->default_font()),
 		CAIRO_FONT_SLANT_NORMAL,
-		font_weight);
-	cairo_set_font_size(cairo, for_height * relative_text_size);
+		style.font_weight);
+	cairo_set_font_size(cairo, for_height * style.relative_text_size);
 	cairo_text_extents_t text_extents;
 	cairo_text_extents(cairo, label.c_str(), &text_extents);
 	cairo_restore(cairo);

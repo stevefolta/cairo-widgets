@@ -25,22 +25,27 @@ class PopupMenu : public Widget {
 		double force_label_width = 0.0;
 		int selected_item = 0;
 		bool has_checked_items = false;
-		double margin = 6.0;
-		const char* font = nullptr;
-		cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_NORMAL;
-		Color border_color = { 0.0, 0.0, 0.0 };
-		Color background_color = { 1.0, 1.0, 1.0 };
-		Color selected_background_color = { 0.75, 0.75, 0.75 };
-		Color hovering_overlay_color = { 0, 0.25, 1, 0.05 };
-		Color foreground_color = { 0.0, 0.0, 0.0 };
-		Color selected_foreground_color = { 0.0, 0.0, 0.0 };
-		Color inactive_foreground_color = { 0.5, 0.5, 0.5 };
-		Color arrow_color = { 0.3, 0.3, 0.3 };
-		double border_width = 1.0;
-		double relative_text_size = 0.75;
-		double relative_arrow_size = 0.5;
-		double relative_roundedness = 0.1;
-		const char* checkmark_string = nullptr;
+
+		struct Style {
+			double margin = 6.0;
+			Color border_color = { 0.0, 0.0, 0.0 };
+			Color background_color = { 1.0, 1.0, 1.0 };
+			Color selected_background_color = { 0.75, 0.75, 0.75 };
+			Color hovering_overlay_color = { 0, 0.5, 1, 0.1 };
+			Color foreground_color = { 0.0, 0.0, 0.0 };
+			Color selected_foreground_color = { 0.0, 0.0, 0.0 };
+			Color inactive_foreground_color = { 0.5, 0.5, 0.5 };
+			Color arrow_color = { 0.3, 0.3, 0.3 };
+			const char* font = nullptr;
+			cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_NORMAL;
+			double border_width = 1.0;
+			double relative_text_size = 0.75;
+			double relative_arrow_size = 0.5;
+			double relative_roundedness = 0.1;
+			const char* checkmark_string = nullptr;
+			};
+		static Style default_style;
+		Style style = default_style;
 
 		// "max_bottom", if greater than zero, will constrain the bottom of the
 		// popped-up menu.
