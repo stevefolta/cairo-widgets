@@ -43,8 +43,8 @@ int fail(const char* message)
 
 int main(int argc, const char* argv[])
 {
-	static int width = 500;
-	static int height = 300;
+	static int width = 700;
+	static int height = 400;
 
 	// Create the X window.
 	display = XOpenDisplay(nullptr);
