@@ -13,17 +13,22 @@ class Checkbox : public Widget {
 		bool checked = false;
 		bool enabled = true;
 		std::string text;
-		const char* font = nullptr;
-		cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_NORMAL;
-		Color box_color = { 0.0, 0.0, 0.0 };
-		Color text_color = { 0.0, 0.0, 0.0 };
+
+		struct Style {
+			const char* font = nullptr;
+			cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_NORMAL;
+			Color box_color = { 0.0, 0.0, 0.0 };
+			Color text_color = { 0.0, 0.0, 0.0 };
+			};
+		Style style = default_style;
+		static Style default_style;
 
 		void paint();
 		void mouse_pressed(int x, int y);
 		bool mouse_released(int x, int y);
 		void mouse_moved(int x, int y);
 
-		double drawn_width();
+		double drawn_width(double for_height = 0.0);
 
 	protected:
 		bool pressed = false, hovering = false;

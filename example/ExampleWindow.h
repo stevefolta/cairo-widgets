@@ -9,6 +9,7 @@ class Button;
 class PopupMenu;
 class CheckedPopupMenu;
 class StringInputBox;
+class Checkbox;
 
 
 class ExampleWindow {
@@ -31,6 +32,7 @@ class ExampleWindow {
 		Button* button = nullptr;
 		PopupMenu* menu = nullptr;
 		CheckedPopupMenu* color_menu = nullptr;
+		Checkbox* checkbox = nullptr;
 		PopupMenu* low_menu = nullptr;
 		std::vector<PopupMenu*> unaligned_popups;
 		std::vector<PopupMenu*> aligned_popups;
