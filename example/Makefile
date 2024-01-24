@@ -1,5 +1,5 @@
 PROGRAM := cairo-widgets-test
-OBJECTS_DIR := objects
+OBJECTS_DIR := build
 CFLAGS += -Wall
 
 -include Makefile.local
@@ -13,6 +13,7 @@ LIBRARIES = X11 cairo
 
 OBJECTS = $(foreach source,$(SOURCES),$(OBJECTS_DIR)/$(source:.cpp=.o))
 OBJECTS_SUBDIRS = $(foreach dir,$(SUBDIRS),$(OBJECTS_DIR)/$(dir))
+DEP_FILES = $(foreach object,$(OBJECTS),$(object:.o=.d))
 
 ifndef VERBOSE_MAKE
 	QUIET := @
@@ -43,8 +44,7 @@ $(OBJECTS_DIR):
 	@echo "Making $@..."
 	$(QUIET) mkdir -p $(OBJECTS_DIR) $(OBJECTS_SUBDIRS)
 
--include $(OBJECTS_DIR)/*.d
--include $(OBJECTS_DIR)/*/*.d
+-include $(DEP_FILES)
 
 
 .PHONY: run
