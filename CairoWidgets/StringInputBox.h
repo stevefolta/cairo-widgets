@@ -31,14 +31,18 @@ class StringInputBox : public Widget {
 
 		double drawn_label_width();
 
-		Color color = default_color, border_color = { 0.0, 0.0, 0.0 }, cursor_color = { 0.0, 0.0, 0.0 }, selection_color = default_selection_color;
-		const char* font = nullptr;
-		cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_NORMAL;
-		double relative_font_size = default_relative_font_size;
-		double border_width = default_border_width;
-		static Color default_color, default_selection_color;
-		static double default_relative_font_size, default_border_width, cursor_flash_rate, cursor_width;
-		static double double_click_time;
+		struct Style {
+			Color color = { 0.0, 0.0, 0.0 }, border_color = { 0.0, 0.0, 0.0 }, cursor_color = { 0.0, 0.0, 0.0 };
+			Color selection_color = { 0.0, 0.5, 1.0, 0.3 };
+			const char* font = nullptr;
+			cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_NORMAL;
+			double relative_font_size = 0.75;
+			double border_width = 1.0;
+			double cursor_width = 1.0;
+			};
+		Style style = default_style;
+		static Style default_style;
+		static double cursor_flash_rate, double_click_time;
 
 	protected:
 		TimeSeconds start_time, last_click_time;

@@ -5,12 +5,8 @@
 #include <stdint.h>
 
 
-Color StringInputBox::default_color = { 0.0, 0.0, 0.0 };
-Color StringInputBox::default_selection_color = { 0.0, 0.5, 1.0, 0.3 };
-double StringInputBox::default_relative_font_size = 0.75;
-double StringInputBox::default_border_width = 1.0;
+StringInputBox::Style StringInputBox::default_style;
 double StringInputBox::cursor_flash_rate = 1.0;
-double StringInputBox::cursor_width = 1.0;
 double StringInputBox::double_click_time = 1.0;
 
 
@@ -36,7 +32,7 @@ void StringInputBox::paint()
 	cairo_text_extents_t text_extents;
 	if (!label.empty() || force_label_width > 0) {
 		cairo_move_to(cairo, rect.x, baseline);
-		use_color(color);
+		use_color(style.color);
 		cairo_show_text(cairo, label.c_str());
 		if (force_label_width > 0)
 			cur_label_width = force_label_width;
@@ -53,13 +49,13 @@ void StringInputBox::paint()
 		cairo_text_extents(cairo, value.substr(0, selection_end).c_str(), &text_extents);
 		double right = rect.x + cur_label_width + margin + text_extents.x_advance;
 		cairo_rectangle(cairo, left, rect.y + margin, right - left, rect.height - 2 * margin);
-		use_color(selection_color);
+		use_color(style.selection_color);
 		cairo_fill(cairo);
 		}
 
 	// Text.
 	cairo_move_to(cairo, rect.x + cur_label_width + margin, baseline);
-	use_color(color);
+	use_color(style.color);
 	cairo_show_text(cairo, value.c_str());
 
 	// Cursor.
@@ -72,8 +68,8 @@ void StringInputBox::paint()
 			double x = rect.x + cur_label_width + margin + text_extents.x_advance;
 			cairo_move_to(cairo, x, rect.y + margin);
 			cairo_line_to(cairo, x, rect.y + rect.height - margin);
-			cairo_set_line_width(cairo, cursor_width);
-			use_color(cursor_color);
+			cairo_set_line_width(cairo, style.cursor_width);
+			use_color(style.cursor_color);
 			cairo_stroke(cairo);
 			}
 		}
@@ -83,8 +79,8 @@ void StringInputBox::paint()
 	cairo_restore(cairo);
 	cairo_save(cairo);
 	cairo_rectangle(cairo, rect.x + cur_label_width, rect.y, rect.width, rect.height);
-	cairo_set_line_width(cairo, border_width);
-	use_color(border_color);
+	cairo_set_line_width(cairo, style.border_width);
+	use_color(style.border_color);
 	cairo_stroke(cairo);
 
 	cairo_restore(cairo);
@@ -277,8 +273,8 @@ double StringInputBox::drawn_label_width()
 StringInputBox::DrawLocs StringInputBox::setup_font()
 {
 	auto cairo = gui->cairo();
-	cairo_select_font_face(cairo, (font ? font : gui->default_font()), CAIRO_FONT_SLANT_NORMAL, font_weight);
-	cairo_set_font_size(cairo, relative_font_size * rect.height);
+	cairo_select_font_face(cairo, (style.font ? style.font : gui->default_font()), CAIRO_FONT_SLANT_NORMAL, style.font_weight);
+	cairo_set_font_size(cairo, style.relative_font_size * rect.height);
 	cairo_text_extents_t text_extents;
 	cairo_text_extents(cairo, "Mg", &text_extents);
 	// Center "Mj" vertically.
