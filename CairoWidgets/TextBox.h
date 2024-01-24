@@ -11,10 +11,15 @@ class TextBox : public Widget {
 			: Widget(gui_in, rect), text(text_in) {}
 
 		std::string text;
-		Color color = { 0.0, 0.0, 0.0 };
-		const char* font = nullptr;
-		double font_size = 12.0;
-		cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_NORMAL;
+
+		struct Style {
+			Color color = { 0.0, 0.0, 0.0 };
+			const char* font = nullptr;
+			double font_size = 12.0;
+			cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_NORMAL;
+			};
+		Style style = default_style;
+		static Style default_style;
 
 		void paint();
 

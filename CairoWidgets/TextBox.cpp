@@ -2,6 +2,8 @@
 #include "CairoGUI.h"
 #include <string_view>
 
+TextBox::Style TextBox::default_style;
+
 
 void TextBox::paint()
 {
@@ -10,9 +12,9 @@ void TextBox::paint()
 	cairo_rectangle(cairo, rect.x, rect.y, rect.width, rect.height);
 	cairo_clip(cairo);
 
-	cairo_select_font_face(cairo, (font ? font : gui->default_font()), CAIRO_FONT_SLANT_NORMAL, font_weight);
-	cairo_set_font_size(cairo, font_size);
-	cairo_set_source_rgb(cairo, color.red, color.green, color.blue);
+	cairo_select_font_face(cairo, (style.font ? style.font : gui->default_font()), CAIRO_FONT_SLANT_NORMAL, style.font_weight);
+	cairo_set_font_size(cairo, style.font_size);
+	use_color(style.color);
 	cairo_font_extents_t font_extents;
 	cairo_font_extents(cairo, &font_extents);
 
