@@ -15,10 +15,6 @@ class Button : public Widget {
 		Button(CairoGUI* gui, const char* label_in, Rect rect = {})
 			: Widget(gui, rect), label(label_in) {}
 
-		void set_font(const char* font_in, cairo_font_weight_t weight_in) {
-			font = font_in;
-			font_weight = weight_in;
-			}
 		bool enabled = true;
 
 		void paint();
@@ -26,13 +22,24 @@ class Button : public Widget {
 		bool mouse_released(int x, int y);
 		void mouse_moved(int x, int y);
 
-		double label_size = 0.6;
-		double corner_size = 8.0;
+		struct Style {
+			const char* font = nullptr;
+			cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_BOLD;
+			double relative_label_size = 0.6;
+			double corner_size = 8.0;
+			};
+		Style style = default_style;
+		static Style default_style;
+
+		// For backwards compatibility.  Now, it's more idiomatic to set members of
+		// "style" directly.
+		void set_font(const char* font_in, cairo_font_weight_t weight_in) {
+			style.font = font_in;
+			style.font_weight = weight_in;
+			}
 
 	protected:
 		const char* label;
 		bool pressed = false, is_mouse_over = false;
-		const char* font = nullptr;
-		cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_BOLD;
 	};
 

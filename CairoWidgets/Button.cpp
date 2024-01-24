@@ -2,6 +2,8 @@
 #include "CairoGUI.h"
 #include <iostream>
 
+Button::Style Button::default_style;
+
 
 void Button::paint()
 {
@@ -9,7 +11,7 @@ void Button::paint()
 	cairo_save(cairo);
 
 	// Border/background.
-	auto cur_corner_size = corner_size;
+	auto cur_corner_size = style.corner_size;
 	if (cur_corner_size >= rect.height / 2)
 		cur_corner_size = rect.height * 0.25;
 	rounded_rect(rect, cur_corner_size);
@@ -24,8 +26,8 @@ void Button::paint()
 	cairo_stroke(cairo);
 
 	// Label.
-	cairo_select_font_face(cairo, (font ? font : gui->default_font()), CAIRO_FONT_SLANT_NORMAL, font_weight);
-	cairo_set_font_size(cairo, rect.height * label_size);
+	cairo_select_font_face(cairo, (style.font ? style.font : gui->default_font()), CAIRO_FONT_SLANT_NORMAL, style.font_weight);
+	cairo_set_font_size(cairo, rect.height * style.relative_label_size);
 	cairo_text_extents_t text_extents, ascent_extents;
 	cairo_text_extents(cairo, label, &text_extents);
 	cairo_text_extents(cairo, "M", &ascent_extents);
