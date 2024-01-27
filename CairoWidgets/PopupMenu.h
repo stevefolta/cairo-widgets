@@ -23,6 +23,7 @@ class PopupMenu : public Widget {
 
 		std::string label;
 		double force_label_width = 0.0;
+		std::vector<std::string> items;
 		int selected_item = 0;
 		bool has_checked_items = false;
 
@@ -52,7 +53,6 @@ class PopupMenu : public Widget {
 		double max_bottom = 0.0;
 
 	protected:
-		std::vector<std::string> items;
 		bool is_up = false;
 		bool hovering = false;
 		int initial_selected_item = -1;
