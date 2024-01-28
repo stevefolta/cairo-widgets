@@ -24,6 +24,29 @@ struct TimeSeconds {
 	TimeSeconds operator+(const TimeSeconds& other) const;
 	TimeSeconds operator-(const TimeSeconds& other) const;
 
+	bool operator==(const TimeSeconds& other) const {
+		return time.tv_sec == other.time.tv_sec && time.tv_nsec == other.time.tv_nsec;
+		}
+	bool operator!=(const TimeSeconds& other) const {
+		return time.tv_sec != other.time.tv_sec || time.tv_nsec != other.time.tv_nsec;
+		}
+	bool operator<(const TimeSeconds& other) const {
+		return
+			(time.tv_sec < other.time.tv_sec) ||
+			(time.tv_sec == other.time.tv_sec && time.tv_nsec < other.time.tv_nsec);
+		}
+	bool operator<=(const TimeSeconds& other) const {
+		return
+			(time.tv_sec < other.time.tv_sec) ||
+			(time.tv_sec == other.time.tv_sec && time.tv_nsec <= other.time.tv_nsec);
+		}
+	bool operator>(const TimeSeconds& other) const {
+		return other <= *this;
+		}
+	bool operator>=(const TimeSeconds& other) const {
+		return other < *this;
+		}
+
 	double as_double() const;
 
 	double elapsed_time() { return (now() - *this).as_double(); }
