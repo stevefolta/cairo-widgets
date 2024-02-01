@@ -264,7 +264,6 @@ void ExampleWindow::layout()
 	auto low_top = height - margin - menu_height;
 	low_menu->rect = { margin, low_top, menu_width, menu_height };
 	low_menu->rect.width = low_menu->natural_width();
-	low_menu->max_bottom = height - margin;
 }
 
 

@@ -48,10 +48,6 @@ class PopupMenu : public Widget {
 		static Style default_style;
 		Style style = default_style;
 
-		// "max_bottom", if greater than zero, will constrain the bottom of the
-		// popped-up menu.
-		double max_bottom = 0.0;
-
 	protected:
 		bool is_up = false;
 		bool hovering = false;

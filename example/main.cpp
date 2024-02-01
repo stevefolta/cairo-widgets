@@ -10,6 +10,8 @@
 
 Display* display = nullptr;
 int screen = 0;
+int width = 700;
+int height = 400;
 Window x_window = 0;
 Atom wm_delete_window_atom = 0;
 cairo_surface_t* surface = nullptr;
@@ -25,7 +27,10 @@ class ExampleCairoGUI : public CairoGUI {
 				cairo_surface_flush(surface);
 				XFlush(display);
 				}
-			};
+			}
+		Rect popup_limits() {
+			return { 0, 0, (double) width, (double) height };
+			}
 	};
 static ExampleCairoGUI cairo_gui;
 
@@ -43,9 +48,6 @@ int fail(const char* message)
 
 int main(int argc, const char* argv[])
 {
-	static int width = 700;
-	static int height = 400;
-
 	// Create the X window.
 	display = XOpenDisplay(nullptr);
 	if (display == nullptr)
@@ -177,8 +179,10 @@ void handle_x11_event(XEvent* event)
 			break;
 		case ConfigureNotify:
 			if (event->xconfigure.window == x_window) {
-				cairo_xlib_surface_set_size(surface, event->xconfigure.width, event->xconfigure.height);
-				example_window->resize(event->xconfigure.width, event->xconfigure.height);
+				width = event->xconfigure.width;
+				height = event->xconfigure.height;
+				cairo_xlib_surface_set_size(surface, width, height);
+				example_window->resize(width, height);
 				redraw();
 				}
 			break;

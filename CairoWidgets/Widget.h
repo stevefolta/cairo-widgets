@@ -1,18 +1,9 @@
 #pragma once
 
+#include "Rect.h"
+
 class CairoGUI;
 
-
-struct Rect {
-	double x, y;
-	double width, height;
-
-	bool contains(double pt_x, double pt_y) {
-		return
-			pt_x >= x && pt_x < x + width &&
-			pt_y >= y && pt_y < y + height;
-		}
-	};
 
 struct Color {
 	double red, green, blue, alpha = 1.0;

@@ -181,14 +181,18 @@ Rect PopupMenu::up_rect()
 	auto label_width = (force_label_width ? force_label_width : natural_label_width());
 	up_rect.x += label_width;
 	up_rect.width -= label_width;
+	auto popup_limits = gui->popup_limits();
 	if (initial_selected_item > 0) {
 		up_rect.y -= initial_selected_item * rect.height;
-		if (up_rect.y < 0)
-			up_rect.y = 0;
+		if (up_rect.y < popup_limits.y)
+			up_rect.y = popup_limits.y;
 		}
 	up_rect.height = items.size() * rect.height;
-	if (up_rect.y + up_rect.height > max_bottom && up_rect.height < max_bottom)
-		up_rect.y = max_bottom - up_rect.height;
+	if (popup_limits.height > 0) {
+		auto max_bottom = popup_limits.y + popup_limits.height;
+		if (up_rect.y + up_rect.height > max_bottom && up_rect.height < max_bottom)
+			up_rect.y = max_bottom - up_rect.height;
+		}
 	return up_rect;
 }
 
