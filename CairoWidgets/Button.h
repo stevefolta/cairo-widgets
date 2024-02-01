@@ -27,6 +27,7 @@ class Button : public Widget {
 			cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_BOLD;
 			double relative_label_size = 0.6;
 			double corner_size = 8.0;
+			double border_width = 2.0;
 			};
 		Style style = default_style;
 		static Style default_style;

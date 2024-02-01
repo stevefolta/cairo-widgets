@@ -23,6 +23,8 @@ void Button::paint()
 	cairo_set_source_rgb(cairo, 0, 0, 0);
 	if (rect.height <= 24)
 		cairo_set_line_width(cairo, 1.0);
+	else
+		cairo_set_line_width(cairo, style.border_width);
 	cairo_stroke(cairo);
 
 	// Label.
