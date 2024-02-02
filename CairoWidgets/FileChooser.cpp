@@ -154,6 +154,10 @@ void FileChooser::key_pressed(int c)
 {
 	if (c == '\n' || c == '\r')
 		enter_selected_entry();
+	else if (c == '\x1B') {
+		if (cancel_fn)
+			cancel_fn();
+		}
 	else {
 		// TODO: handle unicode
 		char str[] = { (char) c, 0 };
