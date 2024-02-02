@@ -150,9 +150,20 @@ void FileChooser::key_pressed(std::string_view key)
 		file_list->key_pressed(key);
 }
 
-void FileChooser::special_key_pressed(std::string_view special_key)
+void FileChooser::key_pressed(int c)
 {
-	file_list->special_key_pressed(special_key);
+	if (c == '\n' || c == '\r')
+		enter_selected_entry();
+	else {
+		// TODO: handle unicode
+		char str[] = { (char) c, 0 };
+		file_list->key_pressed(str);
+		}
+}
+
+void FileChooser::special_key_pressed(SpecialKey key)
+{
+	file_list->special_key_pressed(key);
 }
 
 

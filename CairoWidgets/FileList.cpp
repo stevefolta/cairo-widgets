@@ -231,37 +231,41 @@ void FileList::key_pressed(std::string_view key)
 	show_selected_item();
 }
 
-void FileList::special_key_pressed(std::string_view special_key)
+void FileList::special_key_pressed(SpecialKey key)
 {
-	if (special_key == "<ArrowDown>") {
-		if (selected_index < (int) entries.size() - 1)
-			selected_index += 1;
-		show_selected_item();
-		}
-	else if (special_key == "<ArrowUp>") {
-		if (selected_index > 0)
-			selected_index -= 1;
-		show_selected_item();
-		}
-	else if (special_key == "<PageDown>") {
-		selected_index += num_items_shown();
-		if (selected_index >= (int) entries.size())
-			selected_index = entries.size() - 1;
-		show_selected_item();
-		}
-	else if (special_key == "<PageUp>") {
-		selected_index -= num_items_shown();
-		if (selected_index < 0)
+	switch (key) {
+		case DownArrow:
+			if (selected_index < (int) entries.size() - 1)
+				selected_index += 1;
+			show_selected_item();
+			break;
+		case UpArrow:
+			if (selected_index > 0)
+				selected_index -= 1;
+			show_selected_item();
+			break;
+		case PageDown:
+			selected_index += num_items_shown();
+			if (selected_index >= (int) entries.size())
+				selected_index = entries.size() - 1;
+			show_selected_item();
+			break;
+		case PageUp:
+			selected_index -= num_items_shown();
+			if (selected_index < 0)
+				selected_index = 0;
+			show_selected_item();
+			break;
+		case HomeKey:
 			selected_index = 0;
-		show_selected_item();
-		}
-	else if (special_key == "<Home>") {
-		selected_index = 0;
-		show_selected_item();
-		}
-	else if (special_key == "<End>") {
-		selected_index = entries.size() - 1;
-		show_selected_item();
+			show_selected_item();
+			break;
+		case EndKey:
+			selected_index = entries.size() - 1;
+			show_selected_item();
+			break;
+		default:
+			break;
 		}
 }
 
