@@ -79,7 +79,7 @@ void StringInputBox::paint()
 	// Don't clip it.
 	cairo_restore(cairo);
 	cairo_save(cairo);
-	cairo_rectangle(cairo, rect.x + cur_label_width, rect.y, rect.width, rect.height);
+	cairo_rectangle(cairo, rect.x + cur_label_width, rect.y, rect.width - cur_label_width, rect.height);
 	cairo_set_line_width(cairo, style.border_width);
 	use_color(style.border_color);
 	cairo_stroke(cairo);
