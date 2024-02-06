@@ -13,7 +13,7 @@ double StringInputBox::double_click_time = 1.0;
 StringInputBox::StringInputBox(CairoGUI* gui_in, Rect rect_in)
 	: Widget(gui_in, rect_in)
 {
-	start_time = TimeSeconds::now();
+	tick_phase_time = tick_update_time = TimeSeconds::now();
 }
 
 
@@ -61,7 +61,7 @@ void StringInputBox::paint()
 	// Cursor.
 	if (has_focus && selection_start == selection_end) {
 		// Flashing.
-		bool show = fmod(start_time.elapsed_time(), cursor_flash_rate * 2) < cursor_flash_rate;
+		bool show = fmod(tick_phase_time.elapsed_time(), cursor_flash_rate * 2) < cursor_flash_rate;
 		if (show) {
 			cairo_text_extents_t text_extents;
 			cairo_text_extents(cairo, value.substr(0, selection_start).c_str(), &text_extents);
@@ -72,6 +72,7 @@ void StringInputBox::paint()
 			use_color(style.cursor_color);
 			cairo_stroke(cairo);
 			}
+		tick_update_time = TimeSeconds::now();
 		}
 
 	// Border.
@@ -92,8 +93,10 @@ int StringInputBox::next_update_ms()
 	if (!has_focus || selection_start != selection_end)
 		return -1;
 
-	double elapsed_time = start_time.elapsed_time();
-	return (cursor_flash_rate - fmod(elapsed_time, cursor_flash_rate)) * 1000;
+	double elapsed_time = tick_update_time.elapsed_time();
+	if (elapsed_time >= cursor_flash_rate)
+		return 0;
+	return (cursor_flash_rate - elapsed_time) * 1000;
 }
 
 
@@ -132,7 +135,7 @@ void StringInputBox::key_pressed(int c)
 	new_value += value.substr(selection_end);
 	value = new_value;
 	selection_start = selection_end = new_selection;
-	start_time = TimeSeconds::now();
+	tick_phase_time = tick_update_time = TimeSeconds::now();
 }
 
 void StringInputBox::special_key_pressed(SpecialKey key)
@@ -176,7 +179,7 @@ void StringInputBox::special_key_pressed(SpecialKey key)
 		default: break;
 		}
 
-	start_time = TimeSeconds::now();
+	tick_phase_time = tick_update_time = TimeSeconds::now();
 }
 
 

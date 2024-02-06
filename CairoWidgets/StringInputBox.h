@@ -45,7 +45,7 @@ class StringInputBox : public Widget {
 		static double cursor_flash_rate, double_click_time;
 
 	protected:
-		TimeSeconds start_time, last_click_time;
+		TimeSeconds tick_phase_time, tick_update_time, last_click_time;
 		int selection_start = 0, selection_end = 0;
 		int drag_start = -1, drag_start_end = -1;
 		int clicks = 0;
