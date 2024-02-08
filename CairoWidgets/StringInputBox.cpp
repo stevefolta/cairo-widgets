@@ -209,11 +209,15 @@ void StringInputBox::mouse_pressed(int x, int y)
 bool StringInputBox::mouse_released(int x, int y)
 {
 	mouse_moved(x, y);
+	drag_start = drag_start_end = -1;
 	return false;
 }
 
 void StringInputBox::mouse_moved(int x, int y)
 {
+	if (drag_start < 0)
+		return;
+
 	if (clicks == 1) {
 		int cur_pos = char_pos_for_mouse_pos(x);
 		if (cur_pos <= drag_start) {
