@@ -10,7 +10,7 @@ WIDGETS_SOURCES += Widget.cpp Button.cpp TextBox.cpp PopupMenu.cpp Label.cpp
 WIDGETS_SOURCES += StringInputBox.cpp Checkbox.cpp TimeSeconds.cpp
 SOURCES += $(foreach source,$(WIDGETS_SOURCES),CairoWidgets/$(source))
 SUBDIRS = CairoWidgets
-LIBRARIES = xcb cairo xcb-keysyms xkbcommon xkbcommon-x11 xcb-xkb
+LIBRARIES = xcb cairo xkbcommon xkbcommon-x11 xcb-xkb
 
 OBJECTS = $(foreach source,$(SOURCES),$(OBJECTS_DIR)/$(source:.cpp=.o))
 OBJECTS_SUBDIRS = $(foreach dir,$(SUBDIRS),$(OBJECTS_DIR)/$(dir))
@@ -23,6 +23,7 @@ endif
 all: $(PROGRAM)
 
 CXX ?= g++
+CFLAGS += -std=c++17
 CFLAGS += -MMD
 CFLAGS += -g
 CFLAGS += -Wno-unused-function

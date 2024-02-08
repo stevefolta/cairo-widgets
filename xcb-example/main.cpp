@@ -2,7 +2,6 @@
 #include "XCBConnection.h"
 #include "XKBKeyboard.h"
 #include <xcb/xcb.h>
-#include <xcb/xcb_keysyms.h>
 #include <cairo/cairo-xcb.h>
 #include <poll.h>
 #include <map>
