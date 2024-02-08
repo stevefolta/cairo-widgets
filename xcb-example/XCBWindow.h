@@ -1,5 +1,6 @@
 #pragma once
 
+#include "CompoundWidget.h"
 #include "CairoGUI.h"
 #include "XCBConnection.h"
 #include "Widget.h"
@@ -8,7 +9,7 @@
 #include <string>
 
 
-class XCBWindow {
+class XCBWindow : public CompoundWidget {
 	public:
 		XCBWindow(double initial_width = default_width, double initial_height = default_height);
 		virtual ~XCBWindow();
@@ -21,7 +22,6 @@ class XCBWindow {
 		virtual void resize(double new_width, double new_height);
 		virtual void mouse_pressed(int32_t x, int32_t y, int button);
 		virtual void mouse_released(int32_t x, int32_t y, int button);
-		virtual void mouse_moved(int32_t x, int32_t y);
 		virtual void key_pressed(int c);
 		virtual void special_key_pressed(SpecialKey key);
 		virtual int next_update_ms() { return -1; }
@@ -45,7 +45,7 @@ class XCBWindow {
 						}
 					}
 				Rect popup_limits() {
-					return { 0, 0, (double) window->width, (double) window->height };
+					return { 0, 0, (double) window->rect.width, (double) window->rect.height };
 					}
 				XCBWindow* window;
 			};
@@ -53,13 +53,7 @@ class XCBWindow {
 		cairo_surface_t* surface = nullptr;
 		cairo_t* cairo = nullptr;
 		CairoGUI cairo_gui;
-		double width, height;
-		std::vector<Widget*> all_widgets;
-		Widget* tracking_widget = nullptr;
 		Widget* focused_widget = nullptr;
-
-		virtual void layout() {}
-		virtual void widget_accepted(Widget* widget) {}
 	};
 
 

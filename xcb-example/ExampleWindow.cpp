@@ -93,7 +93,7 @@ void ExampleWindow::layout()
 	auto string_input_box_width = default_string_input_box_width;
 	auto string_input_box_height = default_string_input_box_height;
 	auto checkbox_height = default_checkbox_height;
-	if (height > 1000) {
+	if (rect.height > 1000) {
 		spacing *= 2;
 		button_width *= 2;
 		button_height *= 2;
@@ -140,7 +140,7 @@ void ExampleWindow::layout()
 
 	string_input_box->rect = { margin, top, string_input_box_width, string_input_box_height };
 
-	auto low_top = height - margin - menu_height;
+	auto low_top = rect.height - margin - menu_height;
 	low_menu->rect = { margin, low_top, menu_width, menu_height };
 	low_menu->rect.width = low_menu->natural_width();
 }

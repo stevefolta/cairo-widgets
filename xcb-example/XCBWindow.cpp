@@ -7,7 +7,7 @@ Color XCBWindow::default_background_color = { 1.0, 1.0, 1.0 };
 
 
 XCBWindow::XCBWindow(double initial_width, double initial_height)
-	: cairo_gui(this), width(initial_width), height(initial_height)
+	: CompoundWidget(&cairo_gui, { 0, 0, initial_width, initial_height }), cairo_gui(this)
 {
 	// Create the window.
 	x_window = xcb_generate_id(xcb_connection.connection);
@@ -18,7 +18,7 @@ XCBWindow::XCBWindow(double initial_width, double initial_height)
 		};
 	xcb_create_window(
 		xcb_connection.connection, xcb_connection.screen->root_depth, x_window, xcb_connection.screen->root,
-		0, 0, width, height, 1,
+		0, 0, rect.width, rect.height, 1,
 		XCB_WINDOW_CLASS_INPUT_OUTPUT,
 		xcb_connection.screen->root_visual,
 		XCB_CW_EVENT_MASK, values);
@@ -37,17 +37,13 @@ XCBWindow::XCBWindow(double initial_width, double initial_height)
 	auto visual = xcb_connection.find_visual(xcb_connection.screen->root_visual);
 	if (visual == nullptr)
 		return;
-	surface = cairo_xcb_surface_create(xcb_connection.connection, x_window, visual, width, height);
+	surface = cairo_xcb_surface_create(xcb_connection.connection, x_window, visual, rect.width, rect.height);
 	cairo = cairo_create(surface);
-
 }
 
 
 XCBWindow::~XCBWindow()
 {
-	for (auto widget: all_widgets)
-		delete widget;
-
 	if (cairo)
 		cairo_destroy(cairo);
 	if (surface)
@@ -68,19 +64,13 @@ void XCBWindow::paint()
 
 	// Draw the background.
 	cairo_save(cairo);
-	cairo_rectangle(cairo, 0, 0, width, height);
-	cairo_set_source_rgb(cairo, background_color.red, background_color.green, background_color.blue);
+	use_rect(rect);
+	use_color(background_color);
 	cairo_fill(cairo);
 	cairo_restore(cairo);
 
-	// Always draw the tracking_widget on top.  For example, it could be a
-	// popped-up PopupMenu.
-	for (auto widget: all_widgets) {
-		if (widget != tracking_widget)
-			widget->paint();
-		}
-	if (tracking_widget)
-		tracking_widget->paint();
+	// Draw the widgets.
+	CompoundWidget::paint();
 
 	// Blit to screen.
 	cairo_pop_group_to_source(cairo);
@@ -90,9 +80,9 @@ void XCBWindow::paint()
 
 void XCBWindow::resize(double new_width, double new_height)
 {
-	width = new_width;
-	height = new_height;
-	cairo_xcb_surface_set_size(surface, width, height);
+	rect.width = new_width;
+	rect.height = new_height;
+	cairo_xcb_surface_set_size(surface, rect.width, rect.height);
 	layout();
 }
 
@@ -102,30 +92,13 @@ void XCBWindow::mouse_pressed(int32_t x, int32_t y, int button)
 	if (button != 1)
 		return;
 
-	tracking_widget = nullptr;
-	for (auto widget: all_widgets) {
-		if (widget->contains(x, y)) {
-			tracking_widget = widget;
-			break;
-			}
-		}
-	if (tracking_widget)
-		tracking_widget->mouse_pressed(x, y);
+	CompoundWidget::mouse_pressed(x, y);
 }
 
 void XCBWindow::mouse_released(int32_t x, int32_t y, int button)
 {
-	if (tracking_widget) {
-		if (tracking_widget->mouse_released(x, y))
-			widget_accepted(tracking_widget);
-		}
-	tracking_widget = nullptr;
-}
-
-void XCBWindow::mouse_moved(int32_t x, int32_t y)
-{
-	for (auto widget: all_widgets)
-		widget->mouse_moved(x, y);
+	if (button == 1)
+		CompoundWidget::mouse_released(x, y);
 }
 
 
