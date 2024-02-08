@@ -29,7 +29,6 @@ class ExampleWindow : public XCBWindow {
 		std::vector<PopupMenu*> unaligned_popups;
 		std::vector<PopupMenu*> aligned_popups;
 		StringInputBox* string_input_box = nullptr;
-		Widget* tracking_widget = nullptr;
 
 		void layout();
 		void widget_accepted(Widget* widget);
