@@ -1,5 +1,6 @@
 #include "PopupMenu.h"
 #include "CairoGUI.h"
+#include <math.h>
 
 PopupMenu::Style PopupMenu::default_style;
 
@@ -98,16 +99,32 @@ void PopupMenu::paint()
 }
 
 
+bool PopupMenu::contains(double x, double y)
+{
+	return (is_up ? up_rect().contains(x, y) : rect.contains(x, y));
+}
+
 void PopupMenu::mouse_pressed(int x, int y)
 {
-	initial_selected_item = selected_item;
+	if (!is_up)
+		initial_selected_item = selected_item;
+	is_tapped = !is_up;
 	is_up = true;
+	tap_x = x;
+	tap_y = y;
 }
 
 bool PopupMenu::mouse_released(int x, int y)
 {
 	if (!is_up)
 		return false;
+
+	// Check for "tap to open".
+	mouse_moved(x, y);
+	if (is_tapped) {
+		// Stay up.
+		return false;
+		}
 
 	bool accepted = up_rect().contains(x, y) && item_is_active(selected_item);
 	if (!accepted)
@@ -127,8 +144,24 @@ void PopupMenu::mouse_moved(int x, int y)
 		return;
 		}
 
+	if (is_tapped) {
+		double tap_distance = fabs(x - tap_x);
+		if (tap_distance > style.tap_slop)
+			is_tapped = false;
+		else {
+			tap_distance = fabs(y - tap_y);
+			if (tap_distance > style.tap_slop)
+				is_tapped = false;
+			}
+		}
+
 	Rect full_rect = up_rect();
 	selected_item = (y - full_rect.y) / rect.height;
+}
+
+bool PopupMenu::sticky_tracking()
+{
+	return is_up;
 }
 
 

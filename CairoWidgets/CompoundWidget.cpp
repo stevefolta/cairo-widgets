@@ -23,6 +23,16 @@ void CompoundWidget::paint()
 
 void CompoundWidget::mouse_pressed(int x, int y)
 {
+	// Check for a "tapped open" widget.
+	if (tracking_widget) {
+		if (tracking_widget->contains(x, y)) {
+			tracking_widget->mouse_pressed(x, y);
+			return;
+			}
+		else
+			tracking_widget->mouse_released(x, y);
+		}
+
 	tracking_widget = nullptr;
 	for (auto widget: all_widgets) {
 		if (widget->contains(x, y)) {
@@ -39,10 +49,13 @@ bool CompoundWidget::mouse_released(int x, int y)
 	bool accepted = false;
 	if (tracking_widget) {
 		accepted = tracking_widget->mouse_released(x, y);
-		if (accepted)
+		if (accepted) {
 			widget_accepted(tracking_widget);
+			tracking_widget = nullptr;
+			}
+		else if (!tracking_widget->sticky_tracking())
+			tracking_widget = nullptr;
 		}
-	tracking_widget = nullptr;
 	return accepted;
 }
 

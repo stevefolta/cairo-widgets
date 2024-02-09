@@ -22,12 +22,17 @@ class Widget {
 		virtual ~Widget() {}
 
 		Rect rect;
-		bool contains(double x, double y);
+		virtual bool contains(double x, double y);
 
 		virtual void paint() {}
 		virtual void mouse_pressed(int x, int y) {}
 		virtual bool mouse_released(int x, int y) { return false; }
+			// true => widget has been "accepted" (eg. a button was clicked and not canceled)
 		virtual void mouse_moved(int x, int y) {}
+		virtual bool sticky_tracking() { return false; }
+			// true => the widget is still "tracking" after mouse_released()
+			// return false.  Eg., a PopupMenu that is still popped-up after being
+			// tapped.
 		virtual void scroll_down(int x, int y) {}
 		virtual void scroll_up(int x, int y) {}
 		virtual void key_pressed(int c) {}
