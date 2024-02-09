@@ -48,6 +48,8 @@ XCBWindow::~XCBWindow()
 		cairo_destroy(cairo);
 	if (surface)
 		cairo_surface_destroy(surface);
+	if (x_window)
+		xcb_destroy_window(xcb_connection.connection, x_window);
 }
 
 

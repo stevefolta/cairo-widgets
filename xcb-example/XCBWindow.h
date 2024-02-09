@@ -15,7 +15,7 @@ class XCBWindow : public CompoundWidget {
 		virtual ~XCBWindow();
 		bool is_valid() { return cairo != nullptr; }
 
-		xcb_window_t x_window;
+		xcb_window_t x_window = 0;
 
 		virtual void redraw();
 		virtual void paint();
