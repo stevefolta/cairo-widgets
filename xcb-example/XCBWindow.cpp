@@ -91,7 +91,21 @@ void XCBWindow::resize(double new_width, double new_height)
 
 void XCBWindow::mouse_pressed(int32_t x, int32_t y, int button)
 {
-	if (button != 1)
+	if (button == XCB_BUTTON_INDEX_4 || button == XCB_BUTTON_INDEX_5) {
+		for (auto widget: all_widgets) {
+			if (widget->contains(x, y)) {
+				if (button == XCB_BUTTON_INDEX_5)
+					widget->scroll_down(x, y);
+				else
+					widget->scroll_up(x, y);
+				widget->mouse_moved(x, y);
+				break;
+				}
+			}
+		return;
+		}
+
+	else if (button != XCB_BUTTON_INDEX_1)
 		return;
 
 	CompoundWidget::mouse_pressed(x, y);
