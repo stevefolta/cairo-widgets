@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Widget.h"
+#include "XlibWindow.h"
 #include <vector>
 #include <stdint.h>
 
@@ -12,23 +12,14 @@ class StringInputBox;
 class Checkbox;
 
 
-class ExampleWindow {
+class ExampleWindow : public XlibWindow {
 	public:
-		ExampleWindow(CairoGUI* cairo_gui_in);
+		ExampleWindow(Display* x_display, Atom wm_delete_window_atom);
 		~ExampleWindow();
-
-		void paint();
-		void resize(double new_width, double new_height);
-		void mouse_pressed(int32_t x, int32_t y, int button);
-		void mouse_released(int32_t x, int32_t y, int button);
-		void mouse_moved(int32_t x, int32_t y);
-		void key_pressed(int c);
-		void special_key_pressed(SpecialKey key);
 
 		int next_update_ms();
 
 	protected:
-		CairoGUI* cairo_gui;
 		Button* button = nullptr;
 		PopupMenu* menu = nullptr;
 		CheckedPopupMenu* color_menu = nullptr;
@@ -37,9 +28,8 @@ class ExampleWindow {
 		std::vector<PopupMenu*> unaligned_popups;
 		std::vector<PopupMenu*> aligned_popups;
 		StringInputBox* string_input_box = nullptr;
-		Widget* tracking_widget = nullptr;
-		double width, height;
 
 		void layout();
+		void widget_accepted(Widget* widget);
 	};
 

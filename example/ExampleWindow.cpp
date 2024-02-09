@@ -36,164 +36,44 @@ class CheckedPopupMenu : public PopupMenu {
 	};
 
 
-ExampleWindow::ExampleWindow(CairoGUI* cairo_gui_in)
-	: cairo_gui(cairo_gui_in)
+ExampleWindow::ExampleWindow(Display* x_display, Atom wm_delete_window_atom)
+	: XlibWindow(x_display, wm_delete_window_atom)
 {
-	button = new Button(cairo_gui, "OK");
-	menu = new PopupMenu(cairo_gui, { "Yes", "No", "Maybe" });
-	color_menu = new CheckedPopupMenu(cairo_gui, { "Colors", "Red", "Green", "Blue" });
-	checkbox = new Checkbox(cairo_gui, "Checkbox");
-	low_menu = new PopupMenu(cairo_gui, { "Low", "Lower", "Lowest" });
+	button = new Button(&cairo_gui, "OK");
+	menu = new PopupMenu(&cairo_gui, { "Yes", "No", "Maybe" });
+	color_menu = new CheckedPopupMenu(&cairo_gui, { "Colors", "Red", "Green", "Blue" });
+	checkbox = new Checkbox(&cairo_gui, "Checkbox");
+	low_menu = new PopupMenu(&cairo_gui, { "Low", "Lower", "Lowest" });
 	low_menu->label = "How low: ";
 	std::vector<std::string> menu_items = { "Alpha", "Beta", "Gamma", "Interrobang" };
 	std::vector<std::string> menu_names = { "One", "2", "Threeee" };
 	for (int i = 0; i < 3; ++i) {
-		auto popup = new PopupMenu(cairo_gui, menu_items);
+		auto popup = new PopupMenu(&cairo_gui, menu_items);
 		popup->label = "Unaligned " + menu_names[i] + ": ";
 		unaligned_popups.push_back(popup);
-		popup = new PopupMenu(cairo_gui, menu_items);
+		popup = new PopupMenu(&cairo_gui, menu_items);
 		popup->label = "Aligned " + menu_names[i] + ": ";
 		aligned_popups.push_back(popup);
 		}
-	string_input_box = new StringInputBox(cairo_gui);
+	string_input_box = new StringInputBox(&cairo_gui);
 	string_input_box->value = "Hamburgefons";
 	string_input_box->label = "Input: ";
 	string_input_box->select_all();
-}
 
-
-ExampleWindow::~ExampleWindow()
-{
-	for (auto menu: unaligned_popups)
-		delete menu;
-	for (auto menu: aligned_popups)
-		delete menu;
-	delete button;
-	delete menu;
-	delete color_menu;
-	delete checkbox;
-	delete low_menu;
-	delete string_input_box;
-}
-
-
-void ExampleWindow::paint()
-{
-	auto cairo = cairo_gui->cairo();
-	cairo_push_group(cairo);
-
-	// Draw the background.
-	cairo_save(cairo);
-	cairo_rectangle(cairo, 0, 0, width, height);
-	cairo_set_source_rgb(cairo, background_color.red, background_color.green, background_color.blue);
-	cairo_fill(cairo);
-	cairo_restore(cairo);
-
-	// Draw widgets, always drawing a popped-up menu on top.
-	std::vector<Widget*> all_widgets = {
+	all_widgets = {
 		button, menu, color_menu, checkbox, low_menu, string_input_box,
 		};
 	for (auto menu: unaligned_popups)
 		all_widgets.push_back(menu);
 	for (auto menu: aligned_popups)
 		all_widgets.push_back(menu);
-	for (auto widget: all_widgets) {
-		if (widget != tracking_widget)
-			widget->paint();
-		}
-	if (tracking_widget)
-		tracking_widget->paint();
-
-	// Blit to screen.
-	cairo_pop_group_to_source(cairo);
-	cairo_paint(cairo);
+	focused_widget = string_input_box;
+	string_input_box->has_focus = true;
 }
 
 
-void ExampleWindow::resize(double new_width, double new_height)
+ExampleWindow::~ExampleWindow()
 {
-	width = new_width;
-	height = new_height;
-	layout();
-}
-
-
-void ExampleWindow::mouse_pressed(int32_t x, int32_t y, int button)
-{
-	if (button != 1)
-		return;
-
-	if (this->button->contains(x, y))
-		tracking_widget = this->button;
-	else if (menu->contains(x, y))
-		tracking_widget = menu;
-	else if (color_menu->contains(x, y))
-		tracking_widget = color_menu;
-	else if (string_input_box->contains(x, y))
-		tracking_widget = string_input_box;
-	else if (checkbox->contains(x, y))
-		tracking_widget = checkbox;
-	else if (low_menu->contains(x, y))
-		tracking_widget = low_menu;
-	else {
-		for (auto menu: unaligned_popups) {
-			if (menu->contains(x, y)) {
-				tracking_widget = menu;
-				break;
-				}
-			}
-		if (tracking_widget == nullptr) {
-			for (auto menu: aligned_popups) {
-				if (menu->contains(x, y)) {
-					tracking_widget = menu;
-					break;
-					}
-				}
-			}
-		}
-	if (tracking_widget)
-		tracking_widget->mouse_pressed(x, y);
-}
-
-void ExampleWindow::mouse_released(int32_t x, int32_t y, int button)
-{
-	if (button != 1)
-		return;
-
-	if (tracking_widget) {
-		bool accepted = tracking_widget->mouse_released(x, y);
-		if (accepted && tracking_widget == color_menu) {
-			color_menu->toggle_selected_item();
-			color_menu->selected_item = 0;
-			}
-		tracking_widget = nullptr;
-		}
-}
-
-void ExampleWindow::mouse_moved(int32_t x, int32_t y)
-{
-	if (tracking_widget)
-		tracking_widget->mouse_moved(x, y);
-	else {
-		// Enable hovering behavior for the menus.
-		for (auto menu: { menu, (PopupMenu*) color_menu, low_menu })
-			menu->mouse_moved(x, y);
-		for (auto menu: unaligned_popups)
-			menu->mouse_moved(x, y);
-		for (auto menu: aligned_popups)
-			menu->mouse_moved(x, y);
-		}
-}
-
-
-void ExampleWindow::key_pressed(int c)
-{
-	string_input_box->key_pressed(c);
-}
-
-void ExampleWindow::special_key_pressed(SpecialKey key)
-{
-	string_input_box->special_key_pressed(key);
 }
 
 
@@ -214,7 +94,7 @@ void ExampleWindow::layout()
 	auto string_input_box_width = default_string_input_box_width;
 	auto string_input_box_height = default_string_input_box_height;
 	auto checkbox_height = default_checkbox_height;
-	if (height > 1000) {
+	if (rect.height > 1000) {
 		spacing *= 2;
 		button_width *= 2;
 		button_height *= 2;
@@ -261,9 +141,18 @@ void ExampleWindow::layout()
 
 	string_input_box->rect = { margin, top, string_input_box_width, string_input_box_height };
 
-	auto low_top = height - margin - menu_height;
+	auto low_top = rect.height - margin - menu_height;
 	low_menu->rect = { margin, low_top, menu_width, menu_height };
 	low_menu->rect.width = low_menu->natural_width();
+}
+
+
+void ExampleWindow::widget_accepted(Widget* widget)
+{
+	if (widget == color_menu) {
+		color_menu->toggle_selected_item();
+		color_menu->selected_item = 0;
+		}
 }
 
 

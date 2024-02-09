@@ -4,9 +4,9 @@ CFLAGS += -Wall
 
 -include Makefile.local
 
-SOURCES := main.cpp ExampleWindow.cpp
+SOURCES := main.cpp XlibWindow.cpp ExampleWindow.cpp
 WIDGETS_SOURCES += Widget.cpp Button.cpp TextBox.cpp PopupMenu.cpp Label.cpp
-WIDGETS_SOURCES += StringInputBox.cpp Checkbox.cpp TimeSeconds.cpp
+WIDGETS_SOURCES += StringInputBox.cpp Checkbox.cpp CompoundWidget.cpp TimeSeconds.cpp
 SOURCES += $(foreach source,$(WIDGETS_SOURCES),CairoWidgets/$(source))
 SUBDIRS = CairoWidgets
 LIBRARIES = X11 cairo
