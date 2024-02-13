@@ -11,15 +11,21 @@ class CompoundWidget : public Widget {
 		~CompoundWidget();
 
 		void paint();
+		bool contains(double x, double y);
 		void mouse_pressed(int x, int y);
 		bool mouse_released(int x, int y);
 		void mouse_moved(int x, int y);
+		bool sticky_tracking();
+
+		virtual void layout() {}
 
 	protected:
 		std::vector<Widget*> all_widgets;
 		Widget* tracking_widget = nullptr;
 
-		virtual void layout() {}
 		virtual void widget_accepted(Widget* widget) {}
+
+		void remove_widget(Widget* widget);
+		void delete_widget(Widget* widget);
 	};
 

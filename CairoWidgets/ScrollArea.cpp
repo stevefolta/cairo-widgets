@@ -60,6 +60,20 @@ void ScrollArea::paint()
 
 void ScrollArea::mouse_pressed(int x, int y)
 {
+	// Check for a "tapped open" widget.
+	if (tracking_widget && tracking_widget == contents) {
+		auto adjusted_x = x - rect.x + contents->rect.x;
+		auto adjusted_y = y - rect.y + contents->rect.y + scrollbar->value;
+		if (tracking_widget->contains(x, y)) {
+			tracking_widget->mouse_pressed(adjusted_x, adjusted_y);
+			return;
+			}
+		else {
+			tracking_widget->mouse_released(adjusted_x, adjusted_y);
+			tracking_widget = nullptr;
+			}
+		}
+
 	update_scrollbar();
 	if (scrollbar->contains(x, y)) {
 		tracking_widget = scrollbar;
@@ -82,14 +96,19 @@ bool ScrollArea::mouse_released(int x, int y)
 {
 	update_scrollbar();
 	bool accepted = false;
-	if (tracking_widget == scrollbar)
+	if (tracking_widget == scrollbar) {
 		accepted = scrollbar->mouse_released(x, y);
+		tracking_widget = nullptr;
+		}
 	else if (contents && tracking_widget == contents) {
 		auto adjusted_x = x - rect.x + contents->rect.x;
 		auto adjusted_y = y - rect.y + contents->rect.y + scrollbar->value;
 		accepted = contents->mouse_released(adjusted_x, adjusted_y);
+		if (!tracking_widget->sticky_tracking())
+			tracking_widget = nullptr;
 		}
-	tracking_widget = nullptr;
+	else
+		tracking_widget = nullptr;
 	return accepted;
 }
 
@@ -104,6 +123,11 @@ void ScrollArea::mouse_moved(int x, int y)
 		contents->mouse_moved(adjusted_x, adjusted_y);
 		}
 	scrollbar->mouse_moved(x, y);
+}
+
+bool ScrollArea::sticky_tracking()
+{
+	return (tracking_widget != nullptr);
 }
 
 

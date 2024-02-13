@@ -19,6 +19,7 @@ class ScrollArea : public Widget {
 		void mouse_pressed(int x, int y);
 		bool mouse_released(int x, int y);
 		void mouse_moved(int x, int y);
+		bool sticky_tracking();
 		void scroll_down(int x, int y);
 		void scroll_up(int x, int y);
 
