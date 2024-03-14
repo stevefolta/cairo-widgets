@@ -16,6 +16,7 @@ class CompoundWidget : public Widget {
 		bool mouse_released(int x, int y);
 		void mouse_moved(int x, int y);
 		bool sticky_tracking();
+		int preferred_cursor(int x, int y);
 
 		virtual void layout() {}
 

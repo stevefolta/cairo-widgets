@@ -83,6 +83,17 @@ bool CompoundWidget::sticky_tracking()
 }
 
 
+int CompoundWidget::preferred_cursor(int x, int y)
+{
+	for (auto it = all_widgets.rbegin(); it != all_widgets.rend(); ++it) {
+		auto widget = *it;
+		if (widget->contains(x, y))
+			return widget->preferred_cursor(x, y);
+		}
+	return PointerCursor;
+}
+
+
 void CompoundWidget::remove_widget(Widget* widget)
 {
 	// Delete the widget from the vector (C++ didn't get std::erase() until C++20).

@@ -17,6 +17,10 @@ enum SpecialKey {
 
 class Widget {
 	public:
+		enum {
+			PointerCursor, TextCursor,
+			};
+
 		Widget(CairoGUI* gui_in, Rect rect_in)
 			: rect(rect_in), gui(gui_in) {}
 		virtual ~Widget() {}
@@ -37,6 +41,7 @@ class Widget {
 		virtual void scroll_up(int x, int y) {}
 		virtual void key_pressed(int c) {}
 		virtual void special_key_pressed(SpecialKey key) {}
+		virtual int preferred_cursor(int x, int y) { return PointerCursor; }
 
 		void move_right_to(double right) {
 			rect.x = right - rect.width;
