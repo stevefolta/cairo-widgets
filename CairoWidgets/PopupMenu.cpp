@@ -232,7 +232,16 @@ Rect PopupMenu::up_rect()
 
 double PopupMenu::natural_width(double for_height)
 {
+	// Make sure we have a "cairo".  We'll make one if needed.
 	auto cairo = gui->cairo();
+	cairo_surface_t* created_surface = nullptr;
+	if (cairo == nullptr) {
+		created_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 0, 0);
+		if (created_surface == nullptr)
+			return 0;
+		cairo = cairo_create(created_surface);
+		}
+
 	cairo_save(cairo);
 	if (for_height <= 0)
 		for_height = rect.height;
@@ -265,6 +274,11 @@ double PopupMenu::natural_width(double for_height)
 	// This doesn't seem to need the margin added in...
 
 	cairo_restore(cairo);
+	if (created_surface) {
+		cairo_destroy(cairo);
+		cairo_surface_destroy(created_surface);
+		}
+
 	return label_width + 2 * style.margin + max_item_width + checkmark_width + arrow_width;
 }
 
@@ -273,9 +287,18 @@ double PopupMenu::natural_label_width(double for_height)
 	if (label.empty())
 		return 0;
 
+	// Make sure we have a "cairo".  We'll make one if needed.
+	auto cairo = gui->cairo();
+	cairo_surface_t* created_surface = nullptr;
+	if (cairo == nullptr) {
+		created_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 0, 0);
+		if (created_surface == nullptr)
+			return 0;
+		cairo = cairo_create(created_surface);
+		}
+
 	if (for_height <= 0)
 		for_height = rect.height;
-	auto cairo = gui->cairo();
 	cairo_save(cairo);
 	cairo_select_font_face(
 		cairo,
@@ -285,7 +308,13 @@ double PopupMenu::natural_label_width(double for_height)
 	cairo_set_font_size(cairo, for_height * style.relative_text_size);
 	cairo_text_extents_t text_extents;
 	cairo_text_extents(cairo, label.c_str(), &text_extents);
+
 	cairo_restore(cairo);
+	if (created_surface) {
+		cairo_destroy(cairo);
+		cairo_surface_destroy(created_surface);
+		}
+
 	return text_extents.x_advance;
 }
 
