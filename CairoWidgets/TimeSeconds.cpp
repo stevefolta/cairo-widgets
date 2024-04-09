@@ -32,4 +32,18 @@ double TimeSeconds::as_double() const
 }
 
 
+time_t TimeSeconds::milliseconds() const
+{
+	return time.tv_sec * 1000 + time.tv_nsec / 1000000;
+}
+
+time_t TimeSeconds::ms_left() const
+{
+	auto now = TimeSeconds::now();
+	if (now >= *this)
+		return 0;
+	return (time.tv_sec - now.time.tv_sec) * 1000 + (time.tv_nsec - now.time.tv_nsec) / 1000000;
+}
+
+
 

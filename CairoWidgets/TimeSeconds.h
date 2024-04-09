@@ -8,6 +8,7 @@
 struct TimeSeconds {
 	struct timespec time;
 
+	bool is_valid() const { return time.tv_sec != 0 || time.tv_nsec != 0; }
 	void clear() {
 		this->time.tv_sec = 0;
 		this->time.tv_nsec = 0;
@@ -19,7 +20,8 @@ struct TimeSeconds {
 		return result;
 		}
 
-	time_t seconds() { return time.tv_sec; }
+	time_t seconds() const { return time.tv_sec; }
+	time_t milliseconds() const;
 
 	TimeSeconds operator+(const TimeSeconds& other) const;
 	TimeSeconds operator-(const TimeSeconds& other) const;
@@ -49,6 +51,7 @@ struct TimeSeconds {
 
 	double as_double() const;
 
-	double elapsed_time() { return (now() - *this).as_double(); }
+	double elapsed_time() const { return (now() - *this).as_double(); }
+	time_t ms_left() const;
 	};
 
