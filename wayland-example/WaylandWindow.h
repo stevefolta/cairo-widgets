@@ -3,6 +3,7 @@
 #include "CompoundWidget.h"
 #include "CairoGUI.h"
 #include "Widget.h"
+#include "TimeSeconds.h"
 #include <string>
 #include <vector>
 #include <stdint.h>
@@ -21,7 +22,7 @@ class WaylandWindow : public CompoundWidget {
 		virtual void mouse_moved(double x, double y);
 		virtual void key_pressed(int c);
 		virtual void special_key_pressed(SpecialKey key);
-		virtual int next_update_ms() { return -1; }
+		virtual int next_update_ms(); 	// <0: no update pending
 		virtual void entered(double x, double y);
 
 		void set_title(const std::string& title);
@@ -32,6 +33,8 @@ class WaylandWindow : public CompoundWidget {
 			virtual ~Backend() {}
 			virtual cairo_surface_t* prepare(int width, int height) = 0;
 			virtual void swap() = 0;
+			virtual TimeSeconds next_idle_time() { return { 0, 0 }; }
+			virtual void idle(int width, int height) {}
 			};
 
 		// Exposed to WaylandDisplay.

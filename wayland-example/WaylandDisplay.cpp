@@ -138,8 +138,8 @@ int WaylandDisplay::next_update_ms()
 		}
 
 	// Key repeat.
-	if (key_window && next_key_repeat.seconds() > 0) {
-		int next_repeat_ms = (next_key_repeat - TimeSeconds::now()).as_double() * 1000;
+	if (key_window && next_key_repeat.is_valid()) {
+		int next_repeat_ms = next_key_repeat.ms_left();
 		if (timeout_ms < 0 || next_repeat_ms < timeout_ms)
 			timeout_ms = (next_repeat_ms > 0 ? next_repeat_ms : 0);
 		}

@@ -17,6 +17,8 @@ struct SHMBackend : public WaylandWindow::Backend {
 	~SHMBackend();
 	cairo_surface_t* prepare(int width, int height);
 	void swap();
+	void idle(int width, int height);
+	TimeSeconds next_idle_time() { return next_check_time; }
 
 	struct Pool {
 		Pool(size_t size);
@@ -32,6 +34,7 @@ struct SHMBackend : public WaylandWindow::Backend {
 		bool is_valid() { return wayland_buffer != nullptr; }
 		void allocate(int width, int height);
 		void deallocate();
+		bool is_oversize(int width, int height);
 		void cairo_surface_destroyed();
 		void wayland_release();
 		int width() { return cairo_surface ? cairo_image_surface_get_width(cairo_surface) : 0; }
@@ -46,6 +49,8 @@ struct SHMBackend : public WaylandWindow::Backend {
 	struct wl_surface* wayland_surface;
 	Buffer buffers[2];
 	Buffer* cur_buffer = nullptr;
+	TimeSeconds next_check_time = { 0, 0 };
+	static constexpr int check_seconds = 5;
 	};
 
 
@@ -135,6 +140,10 @@ WaylandWindow::~WaylandWindow()
 
 void WaylandWindow::redraw()
 {
+	auto next_backend_idle_time = backend->next_idle_time();
+	if (next_backend_idle_time.is_valid() && next_backend_idle_time.ms_left() == 0)
+		backend->idle(rect.width, rect.height);
+
 	paint();
 	cairo_gui.refresh();
 }
@@ -263,6 +272,15 @@ void WaylandWindow::special_key_pressed(SpecialKey key)
 {
 	if (focused_widget)
 		focused_widget->special_key_pressed(key);
+}
+
+
+int WaylandWindow::next_update_ms()
+{
+	auto next_idle_time = backend->next_idle_time();
+	if (!next_idle_time.is_valid())
+		return -1;
+	return next_idle_time.ms_left();
 }
 
 
@@ -536,6 +554,7 @@ cairo_surface_t* SHMBackend::prepare(int width, int height)
 	// Resize it if needed.
 	if (cur_buffer->width() != width || cur_buffer->height() != height) {
 		cur_buffer->allocate(width, height);
+		next_check_time = TimeSeconds::now() + TimeSeconds{ check_seconds, 0 };
 		if (!cur_buffer->is_valid())
 			cur_buffer = nullptr;
 		}
@@ -558,6 +577,26 @@ void SHMBackend::swap()
 
 	cur_buffer->busy = true;
 	cur_buffer = nullptr;
+}
+
+
+void SHMBackend::idle(int width, int height)
+{
+	next_check_time.clear();
+
+	for (int which_buffer = 0; which_buffer < 2; ++which_buffer) {
+		auto buffer = &buffers[which_buffer];
+		if (!buffer->is_valid())
+			continue;
+		if (buffer->busy) {
+			// Wayland tends to hold on to the buffer, so this is normal.
+			continue;
+			next_check_time = TimeSeconds::now() + TimeSeconds{ check_seconds, 0 };
+			break;
+			}
+		if (buffer->is_oversize(width, height))
+			buffer->deallocate();
+		}
 }
 
 
@@ -618,8 +657,7 @@ void SHMBackend::Buffer::allocate(int width, int height)
 	// doing too many reallocations can end up crashing Wayland.  Probably
 	// Wayland can't keep up with deleting the shared memory for pools we've
 	// already released.  Only growing pools, not shrinking them, largely
-	// prevents that problem.  Someday perhaps we'll add a mechanism to prune
-	// back memory usage once the resizings subside.
+	// prevents that problem.
 	size_t stride = cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, width);
 	auto needed_size = stride * height;
 	if (pool == nullptr || pool->size < needed_size) {
@@ -672,6 +710,14 @@ void SHMBackend::Buffer::deallocate()
 	cairo_surface = nullptr;
 	delete pool;
 	pool = nullptr;
+}
+
+
+bool SHMBackend::Buffer::is_oversize(int width, int height)
+{
+	size_t stride = cairo_format_stride_for_width(CAIRO_FORMAT_ARGB32, width);
+	auto needed_size = stride * height;
+	return pool != nullptr && pool->size > needed_size;
 }
 
 

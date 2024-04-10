@@ -81,7 +81,11 @@ ExampleWindow::~ExampleWindow()
 
 int ExampleWindow::next_update_ms()
 {
-	return string_input_box->next_update_ms();
+	auto ms_left = WaylandWindow::next_update_ms();
+	auto cursor_ms_left = string_input_box->next_update_ms();
+	if (cursor_ms_left >= 0 && (ms_left < 0 || cursor_ms_left < ms_left))
+		ms_left = cursor_ms_left;
+	return ms_left;
 }
 
 
