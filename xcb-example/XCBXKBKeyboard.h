@@ -9,10 +9,10 @@
 //  	xkbcommon xkbcommon-x11 xcb-xkb
 
 
-class XKBKeyboard {
+class XCBXKBKeyboard {
 	public:
-		XKBKeyboard() {}
-		~XKBKeyboard() { close(); }
+		XCBXKBKeyboard() {}
+		~XCBXKBKeyboard() { close(); }
 
 		bool open(xcb_connection_t* xcb_connection_in);
 		void close();

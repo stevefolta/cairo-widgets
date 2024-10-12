@@ -1,4 +1,4 @@
-#include "XKBKeyboard.h"
+#include "XCBXKBKeyboard.h"
 
 // XCB doesn't like C++ for some reason...
 #define explicit explicit_
@@ -6,7 +6,7 @@
 #undef explicit
 
 
-bool XKBKeyboard::open(xcb_connection_t* xcb_connection_in)
+bool XCBXKBKeyboard::open(xcb_connection_t* xcb_connection_in)
 {
 	xcb_connection = xcb_connection_in;
 	auto result =
@@ -60,7 +60,7 @@ bool XKBKeyboard::open(xcb_connection_t* xcb_connection_in)
 }
 
 
-void XKBKeyboard::close()
+void XCBXKBKeyboard::close()
 {
 	if (key_state) {
 		xkb_state_unref(key_state);
@@ -75,7 +75,7 @@ void XKBKeyboard::close()
 }
 
 
-void XKBKeyboard::handle_event(xcb_generic_event_t* event)
+void XCBXKBKeyboard::handle_event(xcb_generic_event_t* event)
 {
 	if (event->response_type != xkb_response_type)
 		return;
@@ -104,7 +104,7 @@ void XKBKeyboard::handle_event(xcb_generic_event_t* event)
 }
 
 
-std::string XKBKeyboard::utf8_for(xkb_keycode_t key)
+std::string XCBXKBKeyboard::utf8_for(xkb_keycode_t key)
 {
 	if (key_state == nullptr)
 		return "";
@@ -115,7 +115,7 @@ std::string XKBKeyboard::utf8_for(xkb_keycode_t key)
 }
 
 
-bool XKBKeyboard::update_keymap()
+bool XCBXKBKeyboard::update_keymap()
 {
 	auto new_keymap =
 		xkb_x11_keymap_new_from_device(

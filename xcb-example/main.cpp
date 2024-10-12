@@ -1,6 +1,6 @@
 #include "ExampleWindow.h"
 #include "XCBConnection.h"
-#include "XKBKeyboard.h"
+#include "XCBXKBKeyboard.h"
 #include <xcb/xcb.h>
 #include <cairo/cairo-xcb.h>
 #include <poll.h>
@@ -11,7 +11,7 @@
 #define XK_MISCELLANY
 #include <X11/keysymdef.h>
 
-XKBKeyboard keyboard;
+XCBXKBKeyboard keyboard;
 std::map<xcb_window_t, XCBWindow*> windows_by_id;
 bool running = true;
 struct Atom {
