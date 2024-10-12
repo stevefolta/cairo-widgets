@@ -48,6 +48,15 @@ int main(int argc, const char* argv[])
 	example_window->set_title("CairoWidgets Example");
 	windows_by_id[example_window->x_window] = example_window;
 
+	// Handle the first XCB events if any are ready; they might include a resize
+	// event.
+	while (true) {
+		auto event = xcb_poll_for_event(xcb_connection.connection);
+		if (event == nullptr)
+			break;
+		handle_x11_event(event);
+		}
+
 	// Event loop.
 	std::vector<struct pollfd> poll_fds = {
 		{ xcb_get_file_descriptor(xcb_connection.connection), POLLIN, 0 },
