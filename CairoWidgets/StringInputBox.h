@@ -26,6 +26,10 @@ class StringInputBox : public Widget {
 		void mouse_moved(int x, int y);
 		int preferred_cursor(int x, int y) { return TextCursor; }
 
+		void focus() { has_focus = true; }
+		void defocus() { has_focus = false; }
+		bool accepts_input() { return true; }
+
 		void select_start();
 		void select_end();
 		void select_all();

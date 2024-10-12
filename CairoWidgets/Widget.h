@@ -42,6 +42,12 @@ class Widget {
 		virtual void key_pressed(int c) {}
 		virtual void special_key_pressed(SpecialKey key) {}
 		virtual int preferred_cursor(int x, int y) { return PointerCursor; }
+		virtual int next_update_ms() { return -1; } 	// -1 => not needed.
+
+		// Key focus.
+		virtual void focus() {}
+		virtual void defocus() {}
+		virtual bool accepts_input() { return false; }
 
 		void move_right_to(double right) {
 			rect.x = right - rect.width;

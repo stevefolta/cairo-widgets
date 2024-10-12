@@ -6,7 +6,7 @@
 
 class CompoundWidget : public Widget {
 	public:
-		CompoundWidget(CairoGUI* gui_in, Rect rect_in)
+		CompoundWidget(CairoGUI* gui_in, Rect rect_in = {})
 			: Widget(gui_in, rect_in) {}
 		~CompoundWidget();
 

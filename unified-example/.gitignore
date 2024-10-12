@@ -1,0 +1,8 @@
+cairo-widgets-test
+build
+tags
+temp*
+tmp*
+*.tmp
+*.log
+

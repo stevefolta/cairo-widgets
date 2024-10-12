@@ -1,16 +1,25 @@
-PROGRAM := cairo-widgets-xcb-test
+PROGRAM := cairo-widgets-test
 OBJECTS_DIR := build
 CFLAGS += -Wall
 
 -include Makefile.local
 
-SOURCES := main.cpp XCBConnection.cpp XCBWindow.cpp ExampleWindow.cpp
-SOURCES += XCBXKBKeyboard.cpp
+SOURCES := main.cpp ExampleWindowWidget.cpp
 WIDGETS_SOURCES += Widget.cpp Button.cpp TextBox.cpp PopupMenu.cpp Label.cpp
 WIDGETS_SOURCES += StringInputBox.cpp Checkbox.cpp CompoundWidget.cpp TimeSeconds.cpp
-SOURCES += $(foreach source,$(WIDGETS_SOURCES),CairoWidgets/$(source))
+WIDGETS_SOURCES += CairoApp.cpp CairoWindow.cpp
 SUBDIRS = CairoWidgets
-LIBRARIES = xcb cairo xkbcommon xkbcommon-x11 xcb-xkb
+LIBRARIES := cairo
+
+WINDOW_BACKEND ?= xcb
+ifeq "$(WINDOW_BACKEND)" "xcb"
+	WIDGETS_SOURCES += XCBCairoApp.cpp XCBCairoWindow.cpp
+	WIDGETS_SOURCES += XCBConnection.cpp XCBXKBKeyboard.cpp
+	LIBRARIES += xcb xkbcommon xkbcommon-x11 xcb-xkb
+	DEFINES += XCB_WINDOW_BACKEND
+endif
+
+SOURCES += $(foreach source,$(WIDGETS_SOURCES),CairoWidgets/$(source))
 
 OBJECTS = $(foreach source,$(SOURCES),$(OBJECTS_DIR)/$(source:.cpp=.o))
 OBJECTS_SUBDIRS = $(foreach dir,$(SUBDIRS),$(OBJECTS_DIR)/$(dir))
@@ -64,4 +73,10 @@ tags:
 .PHONY: edit-all
 edit-all:
 	@ $(EDITOR) $(filter-out main.h,$(foreach source,$(SOURCES),$(source:.cpp=.h) $(source)))
+
+.PHONY: info
+info:
+	@echo "Objects: $(OBJECTS)"
+
+
 
