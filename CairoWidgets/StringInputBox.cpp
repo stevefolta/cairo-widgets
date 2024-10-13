@@ -280,7 +280,10 @@ double StringInputBox::drawn_label_width()
 StringInputBox::DrawLocs StringInputBox::setup_font()
 {
 	auto cairo = gui->cairo();
-	cairo_select_font_face(cairo, (style.font ? style.font : gui->default_font()), CAIRO_FONT_SLANT_NORMAL, style.font_weight);
+	if (fc_font)
+		use_font(fc_font);
+	else
+		cairo_select_font_face(cairo, (style.font ? style.font : gui->default_font()), CAIRO_FONT_SLANT_NORMAL, style.font_weight);
 	cairo_set_font_size(cairo, style.relative_font_size * rect.height);
 	cairo_text_extents_t text_extents;
 	cairo_text_extents(cairo, "Mg", &text_extents);

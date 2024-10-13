@@ -46,6 +46,7 @@ class StringInputBox : public Widget {
 			double cursor_width = 1.0;
 			};
 		Style style = default_style;
+		CairoFontconfigFont* fc_font = nullptr;
 		static Style default_style;
 		static double cursor_flash_rate, double_click_time;
 

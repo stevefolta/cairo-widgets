@@ -7,9 +7,9 @@ CFLAGS += -Wall
 SOURCES := main.cpp ExampleWindowWidget.cpp
 WIDGETS_SOURCES += Widget.cpp Button.cpp TextBox.cpp PopupMenu.cpp Label.cpp
 WIDGETS_SOURCES += StringInputBox.cpp Checkbox.cpp CompoundWidget.cpp TimeSeconds.cpp
-WIDGETS_SOURCES += CairoApp.cpp CairoWindow.cpp
+WIDGETS_SOURCES += CairoApp.cpp CairoWindow.cpp CairoFontconfigFont.cpp
 SUBDIRS = CairoWidgets
-LIBRARIES := cairo
+LIBRARIES := cairo fontconfig
 
 WINDOW_BACKEND ?= xcb
 ifeq "$(WINDOW_BACKEND)" "xcb"

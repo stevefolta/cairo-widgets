@@ -1,5 +1,6 @@
 #include "Widget.h"
 #include "CairoGUI.h"
+#include "CairoFontconfigFont.h"
 #include <math.h>
 
 
@@ -59,6 +60,15 @@ void Widget::use_rect(const Rect& rect)
 void Widget::use_color(const Color& color)
 {
 	cairo_set_source_rgba(gui->cairo(), color.red, color.green, color.blue, color.alpha);
+}
+
+
+void Widget::use_font(CairoFontconfigFont* fc_font)
+{
+	auto cairo = gui->cairo();
+	cairo_set_font_face(cairo, fc_font->font_face);
+	if (fc_font->size != 0)
+		cairo_set_font_size(cairo, fc_font->size);
 }
 
 
