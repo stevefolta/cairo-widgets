@@ -10,6 +10,8 @@ WIDGETS_SOURCES += StringInputBox.cpp Checkbox.cpp CompoundWidget.cpp TimeSecond
 WIDGETS_SOURCES += CairoApp.cpp CairoWindow.cpp CairoFontconfigFont.cpp
 SUBDIRS = CairoWidgets
 LIBRARIES := cairo fontconfig
+# Work around bug in Cairo headers:
+CFLAGS += $(shell pkg-config --cflags cairo)
 
 WINDOW_BACKEND ?= xcb
 ifeq "$(WINDOW_BACKEND)" "xcb"
