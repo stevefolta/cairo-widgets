@@ -1,6 +1,7 @@
 cairo-widgets-test
 build
 tags
+*.local
 temp*
 tmp*
 *.tmp

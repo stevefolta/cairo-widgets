@@ -52,6 +52,8 @@ void CairoWindow::redraw()
 void CairoWindow::paint()
 {
 	auto cairo = gui()->cairo();
+	if (cairo == nullptr)
+		return;
 	cairo_push_group(cairo);
 
 	// Draw the background.

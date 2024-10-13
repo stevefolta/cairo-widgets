@@ -18,10 +18,26 @@ ifeq "$(WINDOW_BACKEND)" "xcb"
 	LIBRARIES += xcb xkbcommon xkbcommon-x11 xcb-xkb
 	DEFINES += XCB_WINDOW_BACKEND
 endif
+ifeq "$(WINDOW_BACKEND)" "wayland"
+   WIDGETS_SOURCES += WaylandCairoApp.cpp WaylandCairoWindow.cpp
+   WIDGETS_SOURCES += WaylandDisplay.cpp WaylandXKBKeyboard.cpp
+   LIBRARIES += xkbcommon wayland-client wayland-cursor
+   DEFINES += WAYLAND_WINDOW_BACKEND
+
+   WAYLAND_PROTOCOLS := xdg-shell xdg-decoration-unstable-v1 cursor-shape-v1
+   # Needed by cursor-shape-v1:
+   WAYLAND_PROTOCOLS += tablet-unstable-v2
+   WAYLAND_PROTOCOL_DIR ?= wayland-protocols
+   WAYLAND_PROTOCOLS_SOURCE_DIR ?= /usr/share/wayland-protocols
+   SUBDIRS += $(WAYLAND_PROTOCOL_DIR)
+   WAYLAND_PROTOCOL_SOURCES = $(foreach protocol,$(WAYLAND_PROTOCOLS),$(WAYLAND_PROTOCOL_DIR)/$(protocol)-protocol.c)
+   WAYLAND_PROTOCOL_HEADERS = $(foreach protocol,$(WAYLAND_PROTOCOLS),$(WAYLAND_PROTOCOL_DIR)/$(protocol)-client-protocol.h)
+   SOURCES += $(WAYLAND_PROTOCOL_SOURCES)
+endif
 
 SOURCES += $(foreach source,$(WIDGETS_SOURCES),CairoWidgets/$(source))
 
-OBJECTS = $(foreach source,$(SOURCES),$(OBJECTS_DIR)/$(source:.cpp=.o))
+OBJECTS = $(foreach source,$(SOURCES),$(OBJECTS_DIR)/$(patsubst %.c,%.o,$(source:.cpp=.o)))
 OBJECTS_SUBDIRS = $(foreach dir,$(SUBDIRS),$(OBJECTS_DIR)/$(dir))
 DEP_FILES = $(foreach object,$(OBJECTS),$(object:.o=.d))
 
@@ -32,7 +48,7 @@ endif
 all: $(PROGRAM)
 
 CXX ?= g++
-CFLAGS += -std=c++17
+CXX_CFLAGS += -std=c++17
 CFLAGS += -MMD
 CFLAGS += -g
 CFLAGS += -Wno-unused-function
@@ -43,7 +59,11 @@ LINK_FLAGS += $(foreach lib,$(LIBRARIES),-l$(lib))
 
 $(OBJECTS_DIR)/%.o: %.cpp
 	@echo Compiling $<...
-	$(QUIET) $(CXX) -c $< -g $(CFLAGS) -o $@
+	$(QUIET) $(CXX) -c $< -g $(CFLAGS) $(CXXFLAGS) -o $@
+
+$(OBJECTS_DIR)/%.o: %.c
+	@echo Compiling $<...
+	$(QUIET) $(CC) -c $< -g $(CFLAGS) -o $@
 
 $(OBJECTS): | $(OBJECTS_DIR)
 
@@ -54,6 +74,19 @@ $(PROGRAM): $(OBJECTS)
 $(OBJECTS_DIR):
 	@echo "Making $@..."
 	$(QUIET) mkdir -p $(OBJECTS_DIR) $(OBJECTS_SUBDIRS)
+
+$(WAYLAND_PROTOCOL_DIR)/%-protocol.c:
+	@echo "Making $@..."
+	$(QUIET) set -e; 	\
+		XML_SOURCE=$(wildcard $(WAYLAND_PROTOCOLS_SOURCE_DIR)/*/*/$(@:$(WAYLAND_PROTOCOL_DIR)/%-protocol.c=%.xml)); 	\
+		wayland-scanner private-code < $$XML_SOURCE > $@
+$(WAYLAND_PROTOCOL_DIR)/%-client-protocol.h:
+	@echo "Making $@..."
+	$(QUIET) set -e; 	\
+		XML_SOURCE=$(wildcard $(WAYLAND_PROTOCOLS_SOURCE_DIR)/*/*/$(@:$(WAYLAND_PROTOCOL_DIR)/%-client-protocol.h=%.xml)); 	\
+		wayland-scanner client-header < $$XML_SOURCE > $@
+.PHONY: wayland-protocols
+wayland-protocols: $(WAYLAND_PROTOCOL_SOURCES) $(WAYLAND_PROTOCOL_HEADERS)
 
 -include $(DEP_FILES)
 

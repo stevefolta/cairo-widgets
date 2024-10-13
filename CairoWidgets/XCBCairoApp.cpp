@@ -73,7 +73,7 @@ void XCBCairoApp::run()
 			}
 
 		if (fd_update_needed) {
-			poll_fds.resize(1);
+			poll_fds.resize(2);
 			for (auto& it: client_fds)
 				poll_fds.push_back({ it.first, POLLIN, 0 });
 			}

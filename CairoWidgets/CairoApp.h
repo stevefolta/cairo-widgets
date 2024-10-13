@@ -11,6 +11,7 @@ class CairoApp {
 	public:
 		virtual ~CairoApp() {}
 
+		virtual void run() = 0;
 		virtual CairoWindow* new_window() = 0;
 
 		void add_fd(int fd, std::function<void()> read_fn);
