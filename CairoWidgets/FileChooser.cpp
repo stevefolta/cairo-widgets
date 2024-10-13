@@ -142,32 +142,38 @@ void FileChooser::mouse_moved(int x, int y)
 }
 
 
-void FileChooser::key_pressed(std::string_view key)
+bool FileChooser::key_pressed(std::string_view key)
 {
 	if (key == "\n" || key == "\r")
 		enter_selected_entry();
 	else
-		file_list->key_pressed(key);
+		return file_list->key_pressed(key);
+	return true;
 }
 
-void FileChooser::key_pressed(int c)
+bool FileChooser::key_pressed(int c)
 {
-	if (c == '\n' || c == '\r')
+	if (c == '\n' || c == '\r') {
 		enter_selected_entry();
+		return true;
+		}
 	else if (c == '\x1B') {
-		if (cancel_fn)
+		if (cancel_fn) {
 			cancel_fn();
+			return true;
+			}
 		}
 	else {
 		// TODO: handle unicode
 		char str[] = { (char) c, 0 };
-		file_list->key_pressed(str);
+		return file_list->key_pressed(str);
 		}
+	return false;
 }
 
-void FileChooser::special_key_pressed(SpecialKey key)
+bool FileChooser::special_key_pressed(SpecialKey key)
 {
-	file_list->special_key_pressed(key);
+	return file_list->special_key_pressed(key);
 }
 
 

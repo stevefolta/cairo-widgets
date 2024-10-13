@@ -18,8 +18,8 @@ class StringInputBox : public Widget {
 		void paint();
 		int next_update_ms();
 
-		void key_pressed(int c);
-		void special_key_pressed(SpecialKey key);
+		bool key_pressed(int c);
+		bool special_key_pressed(SpecialKey key);
 
 		void mouse_pressed(int x, int y);
 		bool mouse_released(int x, int y);

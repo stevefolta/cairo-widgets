@@ -40,8 +40,10 @@ class Widget {
 			// tapped.
 		virtual void scroll_down(int x, int y) {}
 		virtual void scroll_up(int x, int y) {}
-		virtual void key_pressed(int c) {}
-		virtual void special_key_pressed(SpecialKey key) {}
+		virtual bool key_pressed(int c) { return false; }
+			// true => handled.
+		virtual bool special_key_pressed(SpecialKey key) { return false; }
+			// true => handled.
 		virtual int preferred_cursor(int x, int y) { return PointerCursor; }
 		virtual int next_update_ms() { return -1; } 	// -1 => not needed.
 

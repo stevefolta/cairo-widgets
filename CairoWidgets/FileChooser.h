@@ -31,9 +31,9 @@ class FileChooser : public Widget {
 		void mouse_moved(int x, int y);
 		void scroll_down(int x, int y);
 		void scroll_up(int x, int y);
-		void key_pressed(std::string_view key);
-		void key_pressed(int c);
-		void special_key_pressed(SpecialKey key);
+		bool key_pressed(std::string_view key);
+		bool key_pressed(int c);
+		bool special_key_pressed(SpecialKey key);
 
 		void resize_to(int width, int height);
 

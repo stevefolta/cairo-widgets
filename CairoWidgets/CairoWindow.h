@@ -25,8 +25,8 @@ class CairoWindow {
 		virtual void mouse_pressed(int32_t x, int32_t y, int button);
 		virtual void mouse_released(int32_t x, int32_t y, int button);
 		virtual void mouse_moved(int32_t x, int32_t y);
-		virtual void key_pressed(int c);
-		virtual void special_key_pressed(SpecialKey key);
+		virtual bool key_pressed(int c);
+		virtual bool special_key_pressed(SpecialKey key);
 		virtual int next_update_ms();
 
 		virtual void set_title(const std::string& title) = 0;

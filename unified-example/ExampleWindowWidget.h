@@ -17,8 +17,8 @@ class ExampleWindowWidget : public CompoundWidget {
 
 		void layout();
 
-		void key_pressed(int c);
-		void special_key_pressed(SpecialKey key);
+		bool key_pressed(int c);
+		bool special_key_pressed(SpecialKey key);
 
 	protected:
 		Button* button = nullptr;

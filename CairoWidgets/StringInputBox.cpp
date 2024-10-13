@@ -100,7 +100,7 @@ int StringInputBox::next_update_ms()
 }
 
 
-void StringInputBox::key_pressed(int c)
+bool StringInputBox::key_pressed(int c)
 {
 	if (c == '\b') {
 		// Backspace.
@@ -114,7 +114,7 @@ void StringInputBox::key_pressed(int c)
 				selection_start = selection_end = char_start;
 				}
 			}
-		return;
+		return true;
 		}
 	else if (c == 0x7F) {
 		// Delete.
@@ -122,11 +122,11 @@ void StringInputBox::key_pressed(int c)
 			value = value.substr(0, selection_start) + value.substr(selection_end);
 			selection_end = selection_start;
 			}
-		return;
+		return true;
 		}
 	else if (c < ' ') {
 		// Ignore other control characters.
-		return;
+		return false;
 		}
 
 	// Insert the key.
@@ -136,9 +136,10 @@ void StringInputBox::key_pressed(int c)
 	value = new_value;
 	selection_start = selection_end = new_selection;
 	tick_phase_time = tick_update_time = TimeSeconds::now();
+	return true;
 }
 
-void StringInputBox::special_key_pressed(SpecialKey key)
+bool StringInputBox::special_key_pressed(SpecialKey key)
 {
 	switch (key) {
 		case UpArrow:
@@ -176,10 +177,11 @@ void StringInputBox::special_key_pressed(SpecialKey key)
 			else
 				selection_start = selection_end;
 			break;
-		default: break;
+		default: return false;
 		}
 
 	tick_phase_time = tick_update_time = TimeSeconds::now();
+	return true;
 }
 
 

@@ -109,16 +109,14 @@ void CairoWindow::mouse_moved(int32_t x, int32_t y)
 }
 
 
-void CairoWindow::key_pressed(int c)
+bool CairoWindow::key_pressed(int c)
 {
-	if (widget)
-		widget->key_pressed(c);
+	return widget && widget->key_pressed(c);
 }
 
-void CairoWindow::special_key_pressed(SpecialKey key)
+bool CairoWindow::special_key_pressed(SpecialKey key)
 {
-	if (widget)
-		widget->special_key_pressed(key);
+	return widget && widget->special_key_pressed(key);
 }
 
 

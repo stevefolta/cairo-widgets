@@ -194,10 +194,10 @@ void FileList::scroll_up(int x, int y)
 }
 
 
-void FileList::key_pressed(std::string_view key)
+bool FileList::key_pressed(std::string_view key)
 {
 	if (entries.empty())
-		return;
+		return false;
 
 	// Update the search_string.
 	if (key == "\b" || key == "\x7F") {
@@ -207,12 +207,12 @@ void FileList::key_pressed(std::string_view key)
 				search_string = search_string.substr(0, search_string.size() - 1);
 			search_string = search_string.substr(0, search_string.size() - 1);
 			if (search_string.empty())
-				return;
+				return true;
 			}
 		}
 	else if (key < " ") {
 		// Ignore control characters.
-		return;
+		return false;
 		}
 	else
 		search_string += key;
@@ -229,9 +229,10 @@ void FileList::key_pressed(std::string_view key)
 		}
 	selected_index = left;
 	show_selected_item();
+	return true;
 }
 
-void FileList::special_key_pressed(SpecialKey key)
+bool FileList::special_key_pressed(SpecialKey key)
 {
 	switch (key) {
 		case DownArrow:
@@ -265,8 +266,9 @@ void FileList::special_key_pressed(SpecialKey key)
 			show_selected_item();
 			break;
 		default:
-			break;
+			return false;
 		}
+	return true;
 }
 
 

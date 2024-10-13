@@ -142,16 +142,14 @@ void ExampleWindowWidget::layout()
 }
 
 
-void ExampleWindowWidget::key_pressed(int c)
+bool ExampleWindowWidget::key_pressed(int c)
 {
-	if (focused_widget)
-		focused_widget->key_pressed(c);
+	return focused_widget && focused_widget->key_pressed(c);
 }
 
-void ExampleWindowWidget::special_key_pressed(SpecialKey key)
+bool ExampleWindowWidget::special_key_pressed(SpecialKey key)
 {
-	if (focused_widget)
-		focused_widget->special_key_pressed(key);
+	return focused_widget && focused_widget->special_key_pressed(key);
 }
 
 
