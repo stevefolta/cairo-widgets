@@ -4,6 +4,8 @@
 #include <string>
 #include <cairo/cairo.h>
 
+class CairoFontconfigFont;
+
 
 class TextBox : public Widget {
 	public:
@@ -19,6 +21,7 @@ class TextBox : public Widget {
 			cairo_font_weight_t font_weight = CAIRO_FONT_WEIGHT_NORMAL;
 			};
 		Style style = default_style;
+		CairoFontconfigFont* fc_font = nullptr;
 		static Style default_style;
 
 		void paint();
