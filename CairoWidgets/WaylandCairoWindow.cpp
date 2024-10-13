@@ -140,8 +140,18 @@ WaylandCairoWindow::~WaylandCairoWindow()
 void WaylandCairoWindow::redraw()
 {
 	auto next_backend_idle_time = backend->next_idle_time();
-	if (next_backend_idle_time.is_valid() && next_backend_idle_time.ms_left() == 0)
+	if (next_backend_idle_time.is_valid() && next_backend_idle_time.ms_left() == 0) {
 		backend->idle(width, height);
+		// The backend may have destroyed the surface behind our cairo.
+		if (cairo) {
+			cairo_destroy(cairo);
+			cairo = nullptr;
+			}
+		if (cairo_surface) {
+			cairo_surface_destroy(cairo_surface);
+			cairo_surface = nullptr;
+			}
+		}
 
 	paint();
 	cairo_gui.refresh();
