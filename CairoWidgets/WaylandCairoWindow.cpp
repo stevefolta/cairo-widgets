@@ -137,6 +137,56 @@ WaylandCairoWindow::~WaylandCairoWindow()
 }
 
 
+void WaylandCairoWindow::redraw()
+{
+	auto next_backend_idle_time = backend->next_idle_time();
+	if (next_backend_idle_time.is_valid() && next_backend_idle_time.ms_left() == 0)
+		backend->idle(width, height);
+
+	paint();
+	cairo_gui.refresh();
+}
+
+
+void WaylandCairoWindow::paint()
+{
+	auto cairo = cairo_gui.cairo();
+	if (cairo == nullptr) {
+		// Out of buffers!  Hopefully something will trigger another redraw soon,
+		// and if we're this busy, it probably will.
+		return;
+		}
+
+	// Draw the frame.
+	// Wayland expects *clients* to draw window frames!!!!  WTEF?!
+	if (!server_side_decorations)
+		draw_frame();
+
+	// Set up to draw the interior.
+	if (!server_side_decorations) {
+		cairo_save(cairo);
+		cairo_translate(cairo, style.frame_left, style.frame_top);
+		cairo_rectangle(cairo, 0, 0, width, height);
+		cairo_clip(cairo);
+		}
+
+	// Draw the background.
+	cairo_save(cairo);
+	cairo_rectangle(cairo, 0, 0, width, height);
+	cairo_set_source_rgba(cairo, background_color.red, background_color.green, background_color.blue, background_color.alpha);
+	cairo_fill(cairo);
+	cairo_restore(cairo);
+
+	// Draw the widgets.
+	if (widget)
+		widget->paint();
+
+	// Clean up from interior drawing.
+	if (!server_side_decorations)
+		cairo_restore(cairo);
+}
+
+
 void WaylandCairoWindow::set_title(const std::string& new_title)
 {
 	if (xdg_toplevel == nullptr)
@@ -150,6 +200,7 @@ void WaylandCairoWindow::set_title(const std::string& new_title)
 
 void WaylandCairoWindow::resized(double new_width, double new_height)
 {
+	// Not really used.
 	width = new_width;
 	height = new_height;
 	if (widget) {
@@ -304,8 +355,10 @@ void WaylandCairoWindow::resize(int32_t new_width, int32_t new_height, struct wl
 	if (contents_width != width || contents_height != height) {
 		width = contents_width;
 		height = contents_height;
-		if (widget)
+		if (widget) {
+			widget->rect = { 0, 0, width, height };
 			widget->layout();
+			}
 		layout_frame_buttons();
 		}
 

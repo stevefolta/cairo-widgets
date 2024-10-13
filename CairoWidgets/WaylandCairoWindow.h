@@ -14,6 +14,8 @@ class WaylandCairoWindow : public CairoWindow {
 
 		::CairoGUI* gui() { return &cairo_gui; }
 
+		void redraw();
+		void paint();
 		void set_title(const std::string& title);
 		void resized(double new_width, double new_height);
 
