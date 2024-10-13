@@ -18,6 +18,7 @@ class CairoApp {
 		void remove_fd(int fd);
 
 		void trigger_redraws() { signal.send('r'); }
+		void quit() { signal.send('Q'); }
 
 	protected:
 		SimpleSignal signal;
