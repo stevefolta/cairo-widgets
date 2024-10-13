@@ -412,16 +412,16 @@ void WaylandCairoWindow::draw_frame()
 	// Rounded rect.
 	double corner_size = style.frame_left;
 	cairo_new_sub_path(cairo);
-	cairo_arc(cairo, width - corner_size, corner_size, corner_size, -M_PI / 2.0, 0);
-	cairo_arc(cairo, width - corner_size, height - corner_size, corner_size, 0, M_PI / 2.0);
-	cairo_arc(cairo, corner_size, height - corner_size, corner_size, M_PI / 2.0, M_PI);
+	cairo_arc(cairo, frame_width - corner_size, corner_size, corner_size, -M_PI / 2.0, 0);
+	cairo_arc(cairo, frame_width - corner_size, frame_height - corner_size, corner_size, 0, M_PI / 2.0);
+	cairo_arc(cairo, corner_size, frame_height - corner_size, corner_size, M_PI / 2.0, M_PI);
 	cairo_arc(cairo, corner_size, corner_size, corner_size, M_PI, 1.5 * M_PI);
 	cairo_close_path(cairo);
 	// Punch a hole for the contents (no need to touch those pixels yet).
 	cairo_move_to(cairo, style.frame_left, style.frame_top);
-	cairo_rel_line_to(cairo, 0, height);
-	cairo_rel_line_to(cairo, width, 0);
-	cairo_rel_line_to(cairo, 0, -height);
+	cairo_rel_line_to(cairo, 0, frame_height);
+	cairo_rel_line_to(cairo, frame_width, 0);
+	cairo_rel_line_to(cairo, 0, -frame_height);
 	cairo_close_path(cairo);
 	cairo_set_source_rgb(cairo, style.frame_color.red, style.frame_color.green, style.frame_color.blue);
 	cairo_fill(cairo);
@@ -759,7 +759,7 @@ void WaylandCairoWindow::FrameButton::draw(cairo_t* cairo)
 	const auto& style = WaylandCairoWindow::style;
 
 	// Button frame.
-	cairo_rectangle(cairo, 0, 0, rect.width, rect.height);
+	cairo_rectangle(cairo, rect.x, rect.y, rect.width, rect.height);
 	Color color = (state == Idle ? style.frame_button_idle_color : style.frame_button_clicked_color);
 	cairo_set_source_rgba(cairo, color.red, color.green, color.blue, color.alpha);
 	cairo_fill_preserve(cairo);
@@ -772,10 +772,10 @@ void WaylandCairoWindow::FrameButton::draw(cairo_t* cairo)
 	color = style.frame_button_icon_color;
 	cairo_set_source_rgba(cairo, color.red, color.green, color.blue, color.alpha);
 	cairo_set_line_width(cairo, style.frame_button_icon_line_width);
-	auto icon_left = style.frame_button_icon_inset;
-	auto icon_top = style.frame_button_icon_inset;
-	auto icon_right = rect.width - style.frame_button_icon_inset;
-	auto icon_bottom = rect.height - style.frame_button_icon_inset;
+	auto icon_left = rect.x + style.frame_button_icon_inset;
+	auto icon_top = rect.y + style.frame_button_icon_inset;
+	auto icon_right = rect.x + rect.width - style.frame_button_icon_inset;
+	auto icon_bottom = rect.y + rect.height - style.frame_button_icon_inset;
 	switch (type) {
 		case Close:
 			cairo_move_to(cairo, icon_left, icon_top);

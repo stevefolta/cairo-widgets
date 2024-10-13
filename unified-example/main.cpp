@@ -16,6 +16,7 @@ int main(int argc, const char** argv)
 #endif
 	auto window = app.new_window();
 	window->set_widget(new ExampleWindowWidget(window->gui()));
+	window->set_title("CairoWidgets Example");
 	app.run();
 }
 
