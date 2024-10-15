@@ -68,13 +68,7 @@ ExampleWindowWidget::ExampleWindowWidget(CairoGUI* gui_in)
 	for (auto menu: aligned_popups)
 		all_widgets.push_back(menu);
 	string_input_box->focus();
-	focused_widget = string_input_box;
-}
-
-
-int ExampleWindowWidget::next_update_ms()
-{
-	return focused_widget ? focused_widget->next_update_ms() : -1;
+	focus_widget(string_input_box);
 }
 
 
@@ -141,16 +135,6 @@ void ExampleWindowWidget::layout()
 	low_menu->rect.width = low_menu->natural_width();
 }
 
-
-bool ExampleWindowWidget::key_pressed(int c)
-{
-	return focused_widget && focused_widget->key_pressed(c);
-}
-
-bool ExampleWindowWidget::special_key_pressed(SpecialKey key)
-{
-	return focused_widget && focused_widget->special_key_pressed(key);
-}
 
 
 void ExampleWindowWidget::widget_accepted(Widget* widget)
