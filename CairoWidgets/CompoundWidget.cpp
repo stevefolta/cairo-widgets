@@ -94,6 +94,44 @@ int CompoundWidget::preferred_cursor(int x, int y)
 }
 
 
+bool CompoundWidget::key_pressed(int c)
+{
+	if (focused_widget)
+		return focused_widget->key_pressed(c);
+	return false;
+}
+
+
+bool CompoundWidget::special_key_pressed(SpecialKey key)
+{
+	if (focused_widget)
+		return focused_widget->special_key_pressed(key);
+	return false;
+}
+
+void CompoundWidget::focus()
+{
+	if (focused_widget)
+		focused_widget->focus();
+}
+
+void CompoundWidget::defocus()
+{
+	if (focused_widget)
+		focused_widget->defocus();
+}
+
+
+void CompoundWidget::focus_widget(Widget* new_widget)
+{
+	if (focused_widget)
+		focused_widget->defocus();
+	focused_widget = new_widget;
+	if (focused_widget)
+		focused_widget->focus();
+}
+
+
 void CompoundWidget::remove_widget(Widget* widget)
 {
 	// Delete the widget from the vector (C++ didn't get std::erase() until C++20).
