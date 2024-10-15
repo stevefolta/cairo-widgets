@@ -52,6 +52,10 @@ class Widget {
 		virtual void defocus() {}
 		virtual bool accepts_input() { return false; }
 
+		// This is typically only used for CompoundWidgets, but it's sometimes
+		// helpful to have it virtual in Widget.
+		virtual void layout() {}
+
 		void move_right_to(double right) {
 			rect.x = right - rect.width;
 			}
