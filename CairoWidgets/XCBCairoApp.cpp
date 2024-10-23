@@ -76,6 +76,7 @@ void XCBCairoApp::run()
 			poll_fds.resize(2);
 			for (auto& it: client_fds)
 				poll_fds.push_back({ it.first, POLLIN, 0 });
+			fd_update_needed = false;
 			}
 
 		// xcb_poll_for_event() is tricky!  It can have an event for us even if
