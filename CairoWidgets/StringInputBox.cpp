@@ -266,6 +266,12 @@ void StringInputBox::select_all()
 	selection_end = value.size();
 }
 
+bool StringInputBox::is_at_end()
+{
+	int end = value.size();
+	return selection_start == end && selection_end == end;
+}
+
 
 double StringInputBox::drawn_label_width()
 {

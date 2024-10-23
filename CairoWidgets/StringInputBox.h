@@ -33,6 +33,7 @@ class StringInputBox : public Widget {
 		void select_start();
 		void select_end();
 		void select_all();
+		bool is_at_end();
 
 		double drawn_label_width();
 
