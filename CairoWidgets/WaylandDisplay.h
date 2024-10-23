@@ -32,7 +32,7 @@ class WaylandDisplay {
 		void remove_window(WaylandCairoWindow* window);
 		bool has_windows() { return !windows.empty(); }
 		int next_update_ms();
-		void redraw_pending_windows();
+		bool redraw_pending_windows(); 	// true => successful.
 
 		// Cursor types, in addition to those in Widget.
 		enum {

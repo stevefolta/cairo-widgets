@@ -6,6 +6,7 @@
 #include <sys/mman.h>
 #include <unistd.h>
 #include <string.h>
+#include <iostream>
 
 WaylandCairoWindow::Style WaylandCairoWindow::style;
 
@@ -78,7 +79,7 @@ WaylandCairoWindow::WaylandCairoWindow(double initial_width, double initial_heig
 		static const struct xdg_surface_listener xdg_surface_listener = {
 			.configure = [](void* data, struct xdg_surface* xdg_surface, uint32_t serial) {
 				xdg_surface_ack_configure(xdg_surface, serial);
-				((WaylandCairoWindow*) data)->redraw();
+				((WaylandCairoWindow*) data)->redraw_requested = true;
 				},
 			};
 		xdg_surface_add_listener(xdg_surface, &xdg_surface_listener, this);
@@ -114,6 +115,12 @@ WaylandCairoWindow::WaylandCairoWindow(double initial_width, double initial_heig
 	if (backend == nullptr)
 		return;
 
+	// "Null" surface, for those occasions when the backend doesn't have a Cairo
+	// surface ready for us.  This allows the program to at least measure text.
+	null_surface = cairo_image_surface_create(CAIRO_FORMAT_ARGB32, 0, 0);
+	if (cairo_surface_status(null_surface) == CAIRO_STATUS_SUCCESS)
+		null_cairo = cairo_create(null_surface);
+
 	frame_buttons.emplace_back(FrameButton::Close);
 	frame_buttons.emplace_back(FrameButton::Maximize);
 	frame_buttons.emplace_back(FrameButton::Minimize);
@@ -128,12 +135,20 @@ WaylandCairoWindow::~WaylandCairoWindow()
 	wayland_display.remove_window(this);
 
 	delete backend;
+	cairo_destroy(null_cairo);
+	cairo_surface_destroy(null_surface);
 	if (xdg_toplevel)
 		xdg_toplevel_destroy(xdg_toplevel);
 	if (xdg_surface)
 		xdg_surface_destroy(xdg_surface);
 	if (wayland_surface)
 		wl_surface_destroy(wayland_surface);
+}
+
+
+bool WaylandCairoWindow::can_redraw()
+{
+	return cairo_gui.cairo() != null_cairo;
 }
 
 
@@ -241,7 +256,7 @@ void WaylandCairoWindow::mouse_pressed(double x, double y, int button, uint32_t 
 
 	if (widget)
 		widget->mouse_pressed(x, y);
-	redraw();
+	redraw_requested = true;
 }
 
 void WaylandCairoWindow::mouse_released(double x, double y, int button)
@@ -264,7 +279,7 @@ void WaylandCairoWindow::mouse_released(double x, double y, int button)
 	if (button == 1) {
 		if (widget)
 			widget->mouse_released(x, y);
-		redraw();
+		redraw_requested = true;
 		}
 }
 
@@ -289,7 +304,7 @@ void WaylandCairoWindow::mouse_moved(int32_t x, int32_t y)
 
 	if (widget)
 		widget->mouse_moved(x, y);
-	redraw();
+	redraw_requested = true;
 
 	int new_cursor = widget ? widget->preferred_cursor(x, y) : Widget::PointerCursor;
 	if (new_cursor != last_cursor) {
@@ -345,7 +360,7 @@ cairo_t* WaylandCairoWindow::get_cairo()
 		}
 	cairo_surface = backend->prepare(total_width, total_height);
 	if (cairo_surface == nullptr)
-		return nullptr;
+		return null_cairo;
 	cairo = cairo_create(cairo_surface);
 	return cairo;
 }
@@ -429,9 +444,9 @@ void WaylandCairoWindow::draw_frame()
 	cairo_close_path(cairo);
 	// Punch a hole for the contents (no need to touch those pixels yet).
 	cairo_move_to(cairo, style.frame_left, style.frame_top);
-	cairo_rel_line_to(cairo, 0, frame_height);
-	cairo_rel_line_to(cairo, frame_width, 0);
-	cairo_rel_line_to(cairo, 0, -frame_height);
+	cairo_rel_line_to(cairo, 0, height);
+	cairo_rel_line_to(cairo, width, 0);
+	cairo_rel_line_to(cairo, 0, -height);
 	cairo_close_path(cairo);
 	cairo_set_source_rgb(cairo, style.frame_color.red, style.frame_color.green, style.frame_color.blue);
 	cairo_fill(cairo);
@@ -471,7 +486,7 @@ void WaylandCairoWindow::frame_mouse_pressed(double x, double y, uint32_t serial
 				}
 			}
 		if (tracking_frame_button)
-			redraw();
+			redraw_requested = true;
 		else
 			xdg_toplevel_move(xdg_toplevel, wayland_display.seat, serial);
 		}
@@ -492,7 +507,7 @@ void WaylandCairoWindow::frame_mouse_moved(double x, double y)
 		auto new_state = (tracking_frame_button->rect.contains(x, y) ? FrameButton::Clicked : FrameButton::Idle);
 		if (tracking_frame_button->state != new_state) {
 			tracking_frame_button->state = new_state;
-			redraw();
+			redraw_requested = true;
 			}
 		}
 
@@ -616,9 +631,8 @@ void SHMBackend::idle(int width, int height)
 			continue;
 		if (buffer->busy) {
 			// Wayland tends to hold on to the buffer, so this is normal.
-			continue;
 			next_check_time = TimeSeconds::now() + TimeSeconds{ check_seconds, 0 };
-			break;
+			continue;
 			}
 		if (buffer->is_oversize(width, height))
 			buffer->deallocate();

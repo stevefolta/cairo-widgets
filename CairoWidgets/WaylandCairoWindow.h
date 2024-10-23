@@ -13,6 +13,7 @@ class WaylandCairoWindow : public CairoWindow {
 		bool is_valid() { return wayland_surface != nullptr; }
 
 		::CairoGUI* gui() { return &cairo_gui; }
+		bool can_redraw();
 
 		void redraw();
 		void paint();
@@ -76,6 +77,8 @@ class WaylandCairoWindow : public CairoWindow {
 		Backend* backend = nullptr;
 		cairo_surface_t* cairo_surface = nullptr;
 		cairo_t* cairo = nullptr;
+		cairo_surface_t* null_surface = nullptr;
+		cairo_t* null_cairo = nullptr;
 		CairoGUI cairo_gui;
 		Widget* focused_widget = nullptr;
 		std::string title;

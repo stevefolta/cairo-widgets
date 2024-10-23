@@ -149,26 +149,34 @@ int WaylandDisplay::next_update_ms()
 	return timeout_ms;
 }
 
-void WaylandDisplay::redraw_pending_windows()
+bool WaylandDisplay::redraw_pending_windows()
 {
-	for (auto window: windows) {
-		if (window->redraw_requested || window->next_update_ms() == 0) {
-			window->redraw();
-			window->redraw_requested = false;
-			}
-		}
+	bool ok = true;
 
 	if (key_window && next_key_repeat.seconds() > 0 && TimeSeconds::now() >= next_key_repeat) {
 		if (repeat_unicode > 0)
 			key_window->key_pressed(repeat_unicode);
 		else if (repeat_special_key >= 0)
 			key_window->special_key_pressed((SpecialKey) repeat_special_key);
-		key_window->redraw();
+		key_window->redraw_requested = true;
 
 		int key_repeat_rate_ms = 1000 / key_repeat_rate_cps;
 		next_key_repeat = { key_repeat_rate_ms / 1000, (key_repeat_rate_ms % 1000) * 1000000 };
 		next_key_repeat = TimeSeconds::now() + next_key_repeat;
 		}
+
+	for (auto window: windows) {
+		if (window->redraw_requested || window->next_update_ms() == 0) {
+			if (window->can_redraw()) {
+				window->redraw();
+				window->redraw_requested = false;
+				}
+			else
+				ok = false;
+			}
+		}
+
+	return ok;
 }
 
 WaylandCairoWindow* WaylandDisplay::window_for(struct wl_surface* wayland_surface)
@@ -357,7 +365,7 @@ void WaylandDisplay::keyboard_key(uint32_t serial, uint32_t time, uint32_t key, 
 			key_window->key_pressed(codepoint);
 		repeat_unicode = codepoint;
 		}
-	key_window->redraw();
+	key_window->redraw_requested = true;
 
 	// Set up to repeat it.
 	if (key_repeat_delay_ms > 0) {
