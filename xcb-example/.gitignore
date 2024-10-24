@@ -1,8 +1,0 @@
-cairo-widgets-xcb-test
-build
-objects
-*.tmp
-temp*
-*.local
-tags
-

@@ -1,8 +1,0 @@
-cairo-widgets-wayland-test
-build
-objects
-*.tmp
-temp*
-*.local
-tags
-

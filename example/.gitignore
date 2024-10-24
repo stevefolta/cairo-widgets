@@ -1,8 +1,0 @@
-cairo-widgets-test
-build
-objects
-*.tmp
-temp*
-*.local
-tags
-
