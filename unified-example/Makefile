@@ -20,6 +20,11 @@ ifeq "$(WINDOW_BACKEND)" "xcb"
 	LIBRARIES += xcb xkbcommon xkbcommon-x11 xcb-xkb
 	DEFINES += XCB_WINDOW_BACKEND
 endif
+ifeq "$(WINDOW_BACKEND)" "xlib"
+	WIDGETS_SOURCES += XlibCairoApp.cpp XlibCairoWindow.cpp
+	LIBRARIES += X11
+	DEFINES += XLIB_WINDOW_BACKEND
+endif
 ifeq "$(WINDOW_BACKEND)" "wayland"
    WIDGETS_SOURCES += WaylandCairoApp.cpp WaylandCairoWindow.cpp
    WIDGETS_SOURCES += WaylandDisplay.cpp WaylandXKBKeyboard.cpp

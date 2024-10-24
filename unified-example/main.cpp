@@ -2,6 +2,8 @@
 #include "CairoWindow.h"
 #ifdef XCB_WINDOW_BACKEND
 	#include "XCBCairoApp.h"
+#elif defined(XLIB_WINDOW_BACKEND)
+	#include "XlibCairoApp.h"
 #elif defined(WAYLAND_WINDOW_BACKEND)
 	#include "WaylandCairoApp.h"
 #endif
@@ -11,6 +13,8 @@ int main(int argc, const char** argv)
 {
 #ifdef XCB_WINDOW_BACKEND
 	XCBCairoApp app;
+#elif defined(XLIB_WINDOW_BACKEND)
+	XlibCairoApp app;
 #elif defined(WAYLAND_WINDOW_BACKEND)
 	WaylandCairoApp app;
 #endif
